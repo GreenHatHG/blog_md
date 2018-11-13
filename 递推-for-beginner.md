@@ -4,13 +4,8 @@ date: 2018-04-27 08:33:41
 tags:
 ---
 
-斐波那契兔子问题、斐波那契数－从爬楼梯问题、HDU2046 骨牌铺方格、ＨDU2044 一只小蜜蜂、HDU2048 神、上帝以及老天爷、HDU2049 不容易系列之(4)——考新郎、递推中的平面问题、HDU 2097 Children’s Queue、HDU2045 不容易系列之(3)—— LELE的RPG难题、HDU2047 阿牛的EOF牛肉、for beginner
+斐波那契兔子问题、斐波那契数－从爬楼梯问题、HDU2046 骨牌铺方格、ＨDU2044 一只小蜜蜂、HDU2048 神、上帝以及老天爷、HDU2049 不容易系列之(4)——考新郎、递推中的平面问题、HDU 2097 Children’s Queue、HDU2045 不容易系列之(3)—— LELE的RPG难题、HDU2047 阿牛的EOF牛肉、for beginner,HDU2563统计问题
 
-<<<<<<< HEAD
-HDU2563统计问题
-
-=======
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 <!-- more -->
 
 # 递推的基本思想
@@ -124,12 +119,7 @@ int main()
    }
    ```
 
-<<<<<<< HEAD
 # 错排公式
-=======
-   # 错排公式
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
-
    1. [HDU2048 神、上帝以及老天爷](http://acm.hdu.edu.cn/showproblem.php?pid=2048)
 
       解题:[HDU2048](https://blog.csdn.net/a1647566717/article/details/6680001)
@@ -572,7 +562,4 @@ int main()
     return 0;
 }
 ```
-
-=======
 - HDU2044~2050 (10/5专题练习)
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
