@@ -1,0 +1,212 @@
+---
+title: CodeForces水一水
+date: 2018-07-07 13:22:43
+tags:
+---
+B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法)
+
+<!-- more -->
+
+# B. Binary String Constructing（Div3--构造）
+
+[B. Binary String Constructing](http://codeforces.com/contest/1003/problem/B)
+
+题意：给出a，b，x，构造一个01串，有a个0，b个1。这个01串刚好有x个 S[i] 使得S[i] != S[i+1]。
+
+思路：对于x，我们很容易就可以想到先输出x/2对0和1（n对0和1交错出现可以提供2*n-1个符合题意的S[i]），然后将剩余的0和剩余的1连续输出（提供1个符合条件的S[i]，这样就刚好是x个符合条件的S[i]了，需要注意的是，我们要优先将个数多的放在前面，例如，有10个1,5个0的话，我们先输出x/2个“10”，否则，输出x/2个“01”）。
+
+还有一个情况就是x刚好整除2，这时候得额外处理一个。
+
+比如4 3 2
+
+就需要输出0111000，而不是0100011
+
+之前没有判断x刚好整除2，wa了一个
+
+Input  
+
+```
+50 47 18
+```
+
+Output  
+
+```
+0101010101010101010000000000000000000000000000000000000000011111111111111111111111111111111111111
+```
+
+Answer  
+
+```
+0101010101010101011111111111111111111111111111111111111100000000000000000000000000000000000000000
+```
+
+```c++
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    int zero, one, x;
+    cin >> zero >> one >> x;
+    zero -= x / 2;
+    one -= x / 2;
+    if(zero > one)
+    {
+        for(int i = 0; i < x / 2; i++)
+            cout << "0" << "1";
+        if(x % 2 == 0) 
+        {
+            for(int i = 0; i < one; i++)
+                cout << "1";
+            for(int i = 0; i < zero; i++)
+                cout << "0";
+        }
+        else
+        {
+            for(int i = 0; i < zero; i++)
+                cout << "0";
+            for(int i = 0; i < one; i++)
+                cout << "1";
+        }
+    }
+    else
+    {
+        for(int i = 0; i < x / 2; i++)
+            cout << "1" << "0";
+        if(x % 2 == 0)
+        {
+            for(int i = 0; i < zero; i++)
+                cout << "0";
+            for(int i = 0; i < one; i++)
+                cout << "1";
+        }
+        else
+        {
+            for(int i = 0; i < one; i++)
+                cout << "1";
+            for(int i = 0; i < zero; i++)
+                cout << "0";
+        }
+    }
+    return 0;
+}
+```
+
+# CodeForces - 1004C（Div2--思维）
+
+[CodeForces - 1004C](https://vjudge.net/problem/1655834/origin)
+
+题目大意:有n个数,每个数只能与自己后面的数配对,相同的配对只算一个,求配对的数量.
+
+最开始用set暴力求解，当然是TLE了。
+
+我们只需从1号位置开始检查，判断1号位置后面有多少个不同的数字，然后再从2号位置开始检查，判断2号位置后面有多少个不同的数字，依此类推，最后将所有的结果加起来就可以了（注意，从i号位置检查后面的数时，需要先判读这个位置的数是否以及出现过）。 如果直接暴力检查的话，肯定会tle，所以，我们先预处理出每个位置后面不同数字的个数，然后累加。
+
+```c++
+/*
+Status:Accepted			Time:62ms
+Memory:117424kB			Length:863
+2018-07-21 14:57:53
+*/
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+const int maxLen = 10000000;
+int arr[maxLen];
+int vis[maxLen]; //记录某个数字有没有被算过了
+int cnt[maxLen]; //记录某个数字后面有几个不同的数字
+int main()
+{
+    ios::sync_with_stdio(false);
+    int n;
+    cin >> n;
+    for(int i = 1; i <= n; i++)
+        cin >> arr[i];
+
+    memset(vis, 0, sizeof(vis));
+    memset(cnt, 0, sizeof(cnt));
+
+    for(int i = n; i >= 1; i--) //求出每个数字后面有几个不同的数字
+    {
+        if(!vis[arr[i]])
+        {
+            cnt[i] = cnt[i + 1] + 1;
+            vis[arr[i]] = 1;
+        }
+        else
+        {
+            cnt[i] = cnt[i + 1];
+        }
+    }
+
+    memset(vis, 0, sizeof(vis));
+    long long ans = 0; //注意用long long
+    for(int i = 1; i < n; i++)
+    {
+
+        if(!vis[arr[i]])
+        {
+            ans += cnt[i + 1];
+            vis[arr[i]] = 1;
+        }
+    }
+    cout << ans;
+    return 0;
+}
+```
+
+# CodeForces - 962D(Div2--较为精辟的解法)
+
+[CodeForces - 962D](https://vjudge.net/problem/1484062/origin)
+
+题意：给出一个整数序列。选择其中最小且出现两次（或以上）的数，把最左边的两个从序列中移除， 然后把它们的和放到它们的后面第一位。不断重复上述过程，直到序列中的每个数都是唯一的。 输出最后的序列。
+
+这道题可以用优先队列，set和map来做，挑了一种比较精辟的解法
+
+```c++
+/*
+Status:Accepted			Time:171ms
+Memory:84344kB			Length:593
+2018-07-21 16:06:35
+*/
+#include <iostream>
+#include <map>
+using namespace std;
+typedef long long ll; //注意要用long long
+map<ll, ll>Map; //Map[i]代表i在数组中出现的位置
+
+ll arr[10000000];
+int main()
+{
+    ios::sync_with_stdio(false);
+    int n;
+    cin >> n;
+    int cnt = n;
+    for(int i = 1; i <= n; i++)
+    {
+        cin >> arr[i];
+        while(Map[arr[i]])  //查看前面有没有出现过相同的数字，如果有，那么Map[arr[i]]非0
+        {
+            arr[Map[arr[i]]] = 0; //将之前那个位置的数字变为0，为了在后面输出时判断不是0就输出
+            Map[arr[i]] = 0; //处理完后恢复Map状态
+            arr[i] += arr[i]; 
+            cnt--; //序列个数减一
+        }
+        Map[arr[i]] = i;
+    }
+    cout << cnt << endl;
+    for(int i = 1; i <= n; i++)
+    {
+        if(arr[i])
+            cout << arr[i] << " ";
+    }
+    return 0;
+}
+
+
+```
+
+
+
