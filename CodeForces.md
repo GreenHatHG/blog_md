@@ -3,7 +3,7 @@ title: CodeForces水一水
 date: 2018-07-07 13:22:43
 tags:
 ---
-B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法)
+B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法),1055B - Alice and Hairdresser(思维)
 
 <!-- more -->
 
@@ -208,5 +208,73 @@ int main()
 
 ```
 
+# [1055B - Alice and Hairdresser(div2--思维)](http://codeforces.com/problemset/problem/1055/B)
 
+标签是写着并查集和模拟，刚开始想到用并查集，但是后来行不通，知道得分集合，还得合并集合，但是不知道怎么存储，然后看了别的代码才知道不用那么麻烦，直接判断左右数字就可以确定一个集合，还是太年轻。
+
+题目大意：
+
+       Alice去剪发，一共有n根头发，长度大于l的头发需要剪，如果一个区间中的头发长度全部大于l，那么可以一次给这个区间的所有头发都剪，
+    输入给出0是询问需要剪几次。
+    
+    给出1是第p根头发长了d长度
+
+题解：
+
+      首先总计一下给出的数据需要剪的区间有几个，也就是需要剪的总次数是多少。
+      
+      当给第p根头发增长了d后，以前小于l，增长之后大于l的话
+    
+             如果左右两边都大于l，那么现在第p根也大于l了，就可以和左右两边连成片，一次减掉，所以要剪的总次数减一。
+    
+             如果左右两边都小于等于l，那么第p根现在需要剪了，就要剪的总次数加一。
+    
+     其他情况都不影响剪的总次数。
+---------------------
+参考：https://blog.csdn.net/hxxjxw/article/details/83990002 
+
+```c++
+/*
+submit time:2018-11-20 12:39:55
+time:109 ms
+*/
+
+#include <cstdio>
+using namespace std;
+
+typedef long long ll;
+const int MAXN = 1E6;
+ll arr[MAXN];
+int main()
+{
+    int n, m, l, cnt = 0;
+    scanf("%d %d %d", &n, &m, &l);
+    for(int i = 1; i <= n; i++)
+    {
+        scanf("%lld", arr+i);
+        if(arr[i-1] <= l && arr[i] > l)
+            cnt++;
+    }
+    int q, p, d;
+    while(m--)
+    {
+        scanf("%d", &q);
+        if(q == 0)
+            printf("%d\n", cnt);
+        else
+        {
+            scanf("%d %d", &p, &d);
+            if(arr[p] <= l && (arr[p]+d) > l)
+            {
+                if(arr[p-1] <= l && arr[p+1]<= l)
+                    cnt++;
+                else if(arr[p-1] > l && arr[p+1] > l)
+                    cnt--;
+            }
+            arr[p] += d;
+        }
+    }
+    return 0;
+}
+```
 
