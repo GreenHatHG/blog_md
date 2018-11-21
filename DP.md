@@ -34,7 +34,7 @@ DP入门参考：[漫画：什么是动态规划？](https://www.sohu.com/a/1538
 
 将各阶段按照一定的次序排列好之后，对于某个给定的阶段状态，它以前各阶段的状态无法直接影响它未来的决策，而只能通过当前的这个状态。换句话说，每个状态都是过去历史的一个完整总结。这就是无后向性，又称为无后效性。
 
-<<<<<<< HEAD
+
 # 数塔系列
 
 首先什么是“数塔类型”？从某一点转向另一点或者说是从某一状态转向另一状态，有多种选择方式（比如这里的9->12 , 9->15），从中选取一条能产生最优值的路径。
@@ -290,14 +290,6 @@ int main()
 
 
 
-
-
-
-
-
-
-=======
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 # 数位DP
 
 数位dp是一种计数用的dp，一般就是要统计一个区间内满足一些条件数的个数。
@@ -309,12 +301,8 @@ int main()
 [数位dp记录----bili](https://www.bilibili.com/video/av27156563?from=search&seid=3730573967901251511)
 
 ## [HDU3555( Bomb )模板题](http://acm.hdu.edu.cn/showproblem.php?pid=3555)
-
-<<<<<<< HEAD
 题目大意：在[0,n]的范围内存在多少个数字含有49
 
-=======
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 ```c++
 /*
 Judge Status : Accepted		Language : C++  
@@ -334,13 +322,8 @@ ll dfs(ll len, bool if_num, bool limit)
     //递归边界，既然是按位枚举，最低位是0，那么len == 0说明这个数我枚举完了
     if(len == 0)
         return 1;
-<<<<<<< HEAD
     //两个约束条件,limit防止前面的dp[len][if_num]让条件为真，比如dp[1][1]时，当百位有限制，
     // 而dp[1][1]之前有值了，如果没有limit，就会多算了。
-=======
-    //两个约束条件,limit防止前面的dp[len][if_num]让条件为真，比如dp[0][1]时，当百位有限制，
-    // 而dp[0][1]之前有值了，如果没有limit，就会多算了。
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
     if(!limit && dp[len][if_num]) //不用去统计49
         return dp[len][if_num];
     ll cnt = 0, up = (limit ? digit[len] : 9); //up:如果到了限制那个数位，那么就限制，否则循环0-9
@@ -363,11 +346,7 @@ ll solve(ll num)
         digit[++k] = num % 10;
         num /= 10;
     }
-<<<<<<< HEAD
     return dfs(k, false, true); //从最高位开始枚举
-=======
-    return dfs(k, false, true); //从最高位开始枚举,
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 }
 
 int main()
@@ -380,11 +359,7 @@ int main()
         memset(dp, 0, sizeof(dp));
         ll num;
         cin >> num;
-<<<<<<< HEAD
         //solve:算的是没有49的个数
-=======
-        //solve:算的是有49的个数
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
         cout << num + 1 - solve(num) << endl;
     }
     return 0;
@@ -454,7 +429,6 @@ int main()
 }
 ```
 
-<<<<<<< HEAD
 # LCIS--最长上升公共子序列
 
 讲解：
@@ -521,8 +495,6 @@ int main()
 }
 ```
 
-=======
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 
 
 # LIS--**最长递增子序列**
@@ -757,22 +729,15 @@ int main()
 
 找两个字符串的最长公共子串，这个子串要求在原字符串中是连续的。而最长公共子序列则并不要求连续。
 
-<<<<<<< HEAD
-=======
-cnblogs与belong，最长公共子序列为blog（cnblogs, belong），最长公共子串为lo（cnblogs, belong）
-
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
-这两个问题都是用空间换空间，创建一个二维数组来记录之前的每个状态
+cnblogs与belong，最长公共子序列为blog（cnblogs, belong），最长公共子串为lo（cnblogs, belong）这两个问题都是用空间换空间，创建一个二维数组来记录之前的每个状态
 
 <img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/LCS(%E4%B8%8D%E8%BF%9E%E7%BB%AD%EF%BC%89.png">
 
-<<<<<<< HEAD
+
 <img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/lcs.png">
 
 
 
-=======
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 解释参考：[LCS（最长公共子序列）注意：是可以不连续的，区别于最长公共子串](https://blog.csdn.net/zhuiqiuzhuoyue583/article/details/79178521)
 
 **[poj1458（Common Subsequence）模板题](http://poj.org/problem?id=1458)**
@@ -831,11 +796,7 @@ int main()
 ## [HDU1503(Advanced Fruits)还原最长公共子序列、记录路径](http://acm.hdu.edu.cn/showproblem.php?pid=1503)
 
 ```
-<<<<<<< HEAD
 可以用pre[i][j]来记录dp[i][j]状态转移时是从哪种状态转移过来的，一共就三种：dp[i−1][j−1]+1,dp[i−1][j],dp[i][j−1]。然后从dp[len0][len1]开始往前递归，遇到从dp[i−1][j−1]+1状态转移的情况就标记，直到递归到dp[0][]或者dp[][0]结束。
-=======
-可以用pre[i][j]来记录dp[i][j]状态转移时是从哪种状态转移过来的，一共就三种：dp[i−1][j−1]+1,dp[i−1][j],dp[i][j−1]。然后从dp[len0][len1]开始往前递归，遇到从dp[i−1][j−1]+1状态转移的情况就标记，知道递归到dp[0][]或者dp[][0]结束。
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 ```
 
 参考：[https://blog.csdn.net/Ramay7/article/details/52003368](https://blog.csdn.net/Ramay7/article/details/52003368)
@@ -945,15 +906,11 @@ int main()
 }
 ```
 
-<<<<<<< HEAD
 ## [poj1080(Human Gene Functions)LCS应用](http://poj.org/problem?id=1080)
 
 题意
 
 给定两个基因字符串，用A，C，G，T表示其组成成分。若两个基因的长度不一样，可以通过在两个串中分别添加空格使其长度一致。当其长度一样后，分别计算对应位置上的两个字母的分数，并将所有的分数相加便得到两个串的相似度分数。求，两个基因串的最高分数。
-=======
-## [poj1080(Human Gene Functions)LCS应用](Human Gene Functions)
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
 
 ```
 设dp(i,j)为第一个序列(s1)的前i个数和第二个序列(s2)的前j个数的相似度的最大值。当s1[i-1]==s2[j-1]时，由题目给出的表显然可以得出dp(i,j)=dp(i-1,j-1)+score[s1[i-1]][s2[j-1]];score数组为题目中给出的那个表格。当s1[i-1]!=s2[j-1]时，由普通的LCS显然有dp(i,j)=max(d(i-1,j)+score[s1[i-1]]['-'],dp(i,j-1)+score['-'][],d(i-1,j-1)+score[s1[i-1]][s2[j-1]])。于是，两个for就解决问题了。注意初始化数组。
@@ -1027,11 +984,10 @@ int main()
 
 ## 算法结构
 
-<<<<<<< HEAD
 ```c++
-=======
+
 ```
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
+
 设F[i,j]（1<=i<=j<=n）表示区间[i,j]内的数字相加的最小代价
 每次用变量k（i<=k<=j-1）将区间分为[i,k]和[k+1,j]两段
 
@@ -1054,7 +1010,7 @@ end;
 
 **题意**
 
-```c++
+​```c++
 给出一个数组a，可以将其中除了头尾两个数之外的任何一个数字a[i]取出数列，需要的花费为   a[i-1] * a[i] * a[i+1]，问如果需要把这个数列除了头尾之外的数字都取完，怎样的取出顺序是花费最小的，输出这个最小花费
 ```
 
@@ -1140,7 +1096,7 @@ int main()
 
 ```
 
-<<<<<<< HEAD
+
 ## [LeetCode664 Strange Printer 奇怪的打印机](https://www.cnblogs.com/grandyang/p/8319913.html)
 
 题解：
@@ -1638,8 +1594,7 @@ int main()
     return 0;
 }
 ```
-=======
 
 
->>>>>>> 6db4285e5f5e1d8bae8f248422b6f969a521155a
+
 
