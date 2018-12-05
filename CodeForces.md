@@ -3,7 +3,9 @@ title: CodeForces水一水
 date: 2018-07-07 13:22:43
 tags:
 ---
-B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法),1055B - Alice and Hairdresser(思维)
+B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法),1055B - Alice and Hairdresser(思维),1088A. Ehab and another construction problem(暴力与O(1)),
+
+1088C. Ehab and a 2-operation task(通过操作使数组递增)
 
 <!-- more -->
 
@@ -273,6 +275,72 @@ int main()
             }
             arr[p] += d;
         }
+    }
+    return 0;
+}
+```
+
+# [1088A. Ehab and another construction problem(暴力与O(1))](http://codeforces.com/contest/1088/problem/A)
+给定一个n，找到两个数`a,b{1 <= a,b <= n}`使得a被b整除且`ab>n`且`a/b<n`
+*符合条件的a,b非常多，任意输出一个即可*
+## 解法1---暴力
+暴力的话就是用两个for循环去暴力枚举a，b，然后找出符合条件的a，b输出就行了。
+## 解法2---确定一个数
+我们可以确定b为2，那么a的值就是`n-n%2`，可以得到如下证明：
+(n-n%2)的意思：就是在小于等于n的范围内找出最大能被模2的数，例如11，`n%2=11%2=1`，那么`n-n%2=10`，又如12，`n%2=12%2=0`，那么`n-n%2=12`。
+然后的话可以证明下，首先看范围，当`n>=2`时，b肯定是满足`[1， n]`，看上面的两个例子，当n是奇数时，因为a肯定是得到偶数，因为n是奇数，又是减法，故此时a就是`a-1`了，符合条件，当n是偶数时，那么是根据上式得出的a就是n。
+当n是奇数时，a为`n-1`，b为2，那么就有`a*b=2*(n-1)`，当`n>2`时满足`a*b>n`，同时有`(n-1)/2<n`
+当n是偶数时，a为`n`， b为2，那么就有`a*b=2*n`，当`n>=1`时满足`a*b>n`，同时有`n/2<n`
+根据上面可以得出，当n>=2时，固定b为2，那么a的值就是`n-n%2`。
+*可以看出固定b为2的情况容易证明，但是固定b为3（或者3以后）的情况就难以讨论。*
+```c++
+#include <iostream>
+using namespace std;
+int main()
+{
+    int x;
+    cin >> x;
+    if (x==1)
+    cout << -1;
+    else
+    cout << x-x%2 << '   ' << 2;
+}
+```
+
+# [1088C. Ehab and a 2-operation task(通过操作使数组递增)](http://codeforces.com/contest/1088/problem/C)
+
+给定一个序列 两种操作：
+1. 选定一个i，将[1,i]内的所有数加上x
+2. 选定一个i，将[i,j]内所有数模x
+
+
+让你在不大于n+1次操作后使序列严格递增，输出所进行的操作
+
+<img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/_20181205_100439.JPG">
+
+解法看上图，下面代码用的是Second solution
+
+```c++
+/*
+submit time: 2018-12-05 10:02:07
+time: 31ms
+*/
+#include <iostream>
+using namespace std;
+
+int main()
+{
+    ios::sync_with_stdio(false);
+    int n;
+    cin >> n;
+    const int num = 1e5;
+    cout << n + 1 << endl;
+    cout << "1 " << n  << " " << num << endl;
+    int input;
+    for(int i = 1; i <= n; i++)
+    {
+        cin >> input;
+        cout << "2 " << i << " " << input + num - i << endl;
     }
     return 0;
 }
