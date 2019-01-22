@@ -1,8 +1,7 @@
 ---
 title: c++小总结
 date: 2018-02-17 21:28:51
-tags:
-
+categories: c++
 ---
 构造函数不能共存例子、构造函数放在private、const在函数前与后、相同class的各个objects互为友元、设计一个类注意事项、操作符重载、new与delete、static、继承，复合，委托
 <!-- more -->

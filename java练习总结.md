@@ -1,7 +1,8 @@
 ---
 title: JAVA练习总结
 date: 2018-04-24 22:13:33
-tags:
+categories: JAVA
+tags: 练习
 ---
 
 年少不知道JAVA好，老来望码空流泪

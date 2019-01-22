@@ -1,7 +1,8 @@
 ---
 title: LinuxShell
 date: 2018-06-16 14:52:18
-tags:
+categories: linux
+tags: LinuxShell
 ---
 
 LinuxShell操作小总结

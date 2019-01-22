@@ -1,7 +1,10 @@
 ---
 title: MySQL--deepin15.7环境下的配置
 date: 2018-09-16 14:58:36
+categories: 教程
 tags:
+- MySQL
+- deepin
 ---
 
 deepin15.7基于debian9

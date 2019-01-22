@@ -1,7 +1,10 @@
 ---
 title: java基于URL网络编程--获取网页HTML
 date: 2018-09-30 16:26:25
-tags:
+categories: JAVA
+tags: 
+- JAVA
+- JDBC
 ---
 
 JAVA URL编程

@@ -1,7 +1,11 @@
 ---
 title: MOOC学习python爬虫之简单实战
 date: 2018-09-24 18:02:31
-tags:
+categories: python
+tags: 
+- python
+- 爬虫
+- MOOC
 ---
 
 简单抓取京东，亚马逊，搜索引擎信息，ip归属地查询

@@ -1,6 +1,13 @@
+---
 title: STL之stack, queue以及priority_queue
-data: 2018-02-13 10:31:11
---------
+date: 2018-02-13 10:31:11
+categories: STL
+tags: 
+- priority_queue
+- queue
+- stack
+- STL
+---
 栈、队列、优先队列基本总结
 <!-- more -->
 ### 一、stack

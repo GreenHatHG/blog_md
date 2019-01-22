@@ -1,7 +1,10 @@
 ---
 title: kmp
 date: 2018-08-15 23:03:11
-tags:
+tags: 
+- KMP
+- 字符串
+categories: 算法
 ---
 
 **KMP是一个非常实用的字符串匹配算法**

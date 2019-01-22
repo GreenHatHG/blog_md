@@ -1,7 +1,10 @@
 ---
 title: c++ map
 date: 2018-04-03 14:26:50
-tags:
+categories: STL
+tags: 
+- STL
+- map
 ---
 
  map和multimap

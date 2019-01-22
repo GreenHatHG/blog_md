@@ -1,6 +1,11 @@
+---
 title: STL之二分法四个函数及两道对应习题
-data: 2018-02-12 16:45:32
---------
+date: 2018-02-12 16:45:32
+categories: STL
+tags: 
+- 二分
+- STL
+---
 STL四个二分搜索操作函数：lower_bound, upper_bound, binary_search, equal_range
 <!-- more -->
 注意：

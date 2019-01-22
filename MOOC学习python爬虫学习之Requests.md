@@ -1,7 +1,11 @@
 ---
 title: MOOC学习python爬虫学习之Requests
 date: 2018-09-23 19:54:28
-tags:
+categories: python
+tags: 
+- python
+- 爬虫
+- MOOC
 ---
 
 Python-Requests库

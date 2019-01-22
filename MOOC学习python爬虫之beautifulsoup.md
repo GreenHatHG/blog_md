@@ -1,7 +1,11 @@
 ---
 title: MOOC学习python爬虫之beautifulsoup
 date: 2018-09-24 19:41:58
-tags:
+categories: python
+tags: 
+- python
+- 爬虫
+- MOOC
 ---
 
 beautifulsoup4

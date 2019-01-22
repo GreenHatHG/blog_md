@@ -1,7 +1,8 @@
 ---
 title: JDBC之PreparedStatement对象执行SQL语句
 date: 2018-09-18 18:26:22
-tags:
+tags: JDBC
+categories: JAVA
 ---
 
 实现Statement接口

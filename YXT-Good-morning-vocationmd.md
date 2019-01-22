@@ -2,7 +2,7 @@
 title: Good Morning vocation
 date: 2018-03-03 03:12
 categories: 悠闲谈
-tags:
+tags: 
 ---
 
 Good morning, beautiful vocation

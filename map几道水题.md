@@ -1,7 +1,8 @@
 ---
 title: map几道水题
 date: 2018-04-06 19:25:42
-tags:
+categories: 水题
+tags: map
 ---
 
 uva156 codeforces 959B

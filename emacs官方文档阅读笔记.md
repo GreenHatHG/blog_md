@@ -1,7 +1,8 @@
 ---
 title: emacs官方文档阅读笔记
 date: 2018-02-19 10:26:43
-tags:
+categories: linux工具
+tags: emacs
 ---
 基本命令行
 <!-- more -->

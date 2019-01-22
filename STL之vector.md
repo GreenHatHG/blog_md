@@ -1,6 +1,11 @@
+---
 title: STL之vector
-data: 2018-02-14 13:03
---------
+date: 2018-02-14 13:03
+categories: STL
+tags: 
+- STL
+- vector
+---
 vector的声明、向量操作、访问方式、赋值操作、安插，移除相关操作、应用实例。一道习题（第k个约数）
 <!-- more -->
 ### 一、 开始：

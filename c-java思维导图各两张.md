@@ -1,7 +1,8 @@
 ---
 title: c++/java思维导图各两张
 date: 2018-04-06 01:47:47
-tags:
+categories: 图片
+tags: 思维导图
 ---
 
 c++/java思维导图各两张

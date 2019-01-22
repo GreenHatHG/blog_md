@@ -1,14 +1,19 @@
+---
 title: STL之set和multiset
-data: 2018-02-15 11;31:23
------------------------
+date: 2018-02-15 11;31:23
+categories: STL
+tags: 
+- STL
+- set
+---
 set和multiset容器的操作函数和一道题：HDU 4989 Summary
 <!-- more -->
 # 一、开始
 1. 使用set或multiset之前，必须加入头文件<set>
 2. set的含义是集合，它是一个有序的容器，里面的元素都是排序好的，支持插入，删除，查找等操作，就像一个集合一样。所有的操作的都是严格在logn时间之内完成，效率非常高。
 3. set 和multiset容器的内部结构通常由平衡二叉树(balancedbinary tree)来实现。当元素放入容器中时，会按照一定的排序法则自动排序，默认是按照less<>排序规则来排序。两者不同之处在于，multisets允许元素重复，而set不允许重复。
-  平衡二叉树：
-  </div>
+    平衡二叉树：
+    </div>
   <div align="center">
   <img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91.png" width="60%" height="60%">
   </div>

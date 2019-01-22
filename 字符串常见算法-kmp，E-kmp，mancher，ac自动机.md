@@ -1,7 +1,8 @@
 ---
 title: 字符串常见算法--kmp，E-kmp，manacher，ac自动机
 date: 2018-10-27 18:21:30
-tags:
+categories: 算法
+tags: manacher
 ---
 
 kmp，E-kmp，manacher，ac自动机

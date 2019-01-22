@@ -1,7 +1,11 @@
 ---
 title: MOOC学习python爬虫之中国大学排名
 date: 2018-09-25 10:02:04
-tags:
+categories: python
+tags: 
+- python
+- 爬虫
+- MOOC
 ---
 
 定向爬虫

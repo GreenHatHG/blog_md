@@ -1,7 +1,8 @@
 ---
 title: 递推(for beginner)
 date: 2018-04-27 08:33:41
-tags:
+categories: 算法
+tags: 递推
 ---
 
 斐波那契兔子问题、斐波那契数－从爬楼梯问题、HDU2046 骨牌铺方格、ＨDU2044 一只小蜜蜂、HDU2048 神、上帝以及老天爷、HDU2049 不容易系列之(4)——考新郎、递推中的平面问题、HDU 2097 Children’s Queue、HDU2045 不容易系列之(3)—— LELE的RPG难题、HDU2047 阿牛的EOF牛肉、for beginner,HDU2563统计问题

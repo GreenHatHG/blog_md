@@ -1,7 +1,8 @@
 ---
 title: JDBC入门
 date: 2018-09-18 12:25:28
-tags:
+categories: JAVA
+tags: JDBC
 ---
 
 java访问数据库技术

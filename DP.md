@@ -1,7 +1,8 @@
 ---
 title: DP
 date: 2018-08-02 22:52:59
-tags:
+categories: DP
+tags: DP
 ---
 
 动态规划

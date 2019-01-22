@@ -1,7 +1,10 @@
 ---
 title: c++string
 date: 2018-02-21 14:08:11
-tags:
+categories: STL
+tags: 
+- STL
+- string
 ---
 
 string小结

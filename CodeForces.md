@@ -1,7 +1,8 @@
 ---
 title: CodeForces水一水
 date: 2018-07-07 13:22:43
-tags:
+categories: 水题
+tags: CodeForces
 ---
 B. Binary String Constructing（Div3--构造）,CodeForces - 1004C（Div2--思维）,CodeForces - 962D(Div2--较为精辟的解法),1055B - Alice and Hairdresser(思维),1088A. Ehab and another construction problem(暴力与O(1)),
 
