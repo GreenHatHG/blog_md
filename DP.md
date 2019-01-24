@@ -1582,9 +1582,9 @@ int main()
     {
         cin >> n2 >> s2;
         //初始化
-        for(int i = 0; i <= n1; i++) //s2为空，s1添加字符串变成s2
+        for(int i = 0; i <= n1; i++) //s2为空，s1删除字符串变成s2
             dp[i][0] = i;
-        for(int i = 0; i <= n2; i++) //s1为空，s2删除字符串变成s1
+        for(int i = 0; i <= n2; i++) //s1为空，s1添加字符串变成s2
             dp[0][i] = i;
         for(int i = 1; i <= n1; i++)
             for(int j = 1; j <= n2; j++)
