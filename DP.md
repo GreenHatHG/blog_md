@@ -383,7 +383,7 @@ int main()
 using namespace std;
 typedef long long ll;
 
-int digit[20]
+int digit[20];
 ll dp[20][2];
 
 ll dfs(ll len, bool if_num, bool limit)
@@ -397,9 +397,9 @@ ll dfs(ll len, bool if_num, bool limit)
     {
         if(if_num && i == 2) //改
             continue;
-        if(if_num == 4 || i == 4) //改
+        if(if_num ==4 || i == 4) //改
             continue;
-        cnt += dfs(len - 1, i == 6, limit && i == up); ？//改
+        cnt += dfs(len - 1, i == 6, limit && i == up); //改
     }
     if(!limit) 
         dp[len][if_num] = cnt;
@@ -429,6 +429,60 @@ int main()
     return 0;
 }
 ```
+
+## [牛客--区间内数字含有6的个数](https://ac.nowcoder.com/acm/contest/329/G)
+
+```c++
+/*
+ * Submit Time 2019-01-27 23:21:50
+ */
+#include <iostream>
+#include <cstring>
+using namespace std;
+typedef long long ll;
+ 
+int digit[20];
+ll dp[20][2];
+ 
+ll dfs(ll len, bool if_num, bool limit)
+{
+    if(len == 0)
+        return if_num;
+    if(!limit && dp[len][if_num])
+        return dp[len][if_num];
+    ll cnt = 0, up = (limit ? digit[len] : 9);
+    for(int i = 0; i <= up; i++)
+        cnt += dfs(len - 1, if_num || i == 6, limit &&i == digit[len]);
+    if(!limit)
+        dp[len][if_num] = cnt;
+    return cnt;
+}
+ 
+ll solve(ll num)
+{
+    int k = 0;
+    while(num)
+    {
+        digit[++k] = num % 10;
+        num /= 10;
+    }
+    return dfs(k, false, true);
+}
+ 
+int main()
+{
+    ios::sync_with_stdio(false);
+    ll n, m;
+    while(cin >> n >> m)
+    {
+        memset(dp, 0, sizeof(dp));
+        cout << solve(m) - solve(n - 1) << endl;
+    }
+    return 0;
+}
+```
+
+
 
 # LCIS--最长上升公共子序列
 
