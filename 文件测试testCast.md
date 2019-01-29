@@ -13,7 +13,7 @@ categories: 教程
 
 # freopen
 
-参考：
+参考
 
 [https://blog.csdn.net/u013480600/article/details/18372341](https://blog.csdn.net/u013480600/article/details/18372341)
 
