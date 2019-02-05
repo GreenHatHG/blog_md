@@ -2,7 +2,9 @@
 layout: 牛客--applese的回文串
 title: 牛客--applese的回文串
 date: 2019-01-30 12:09:12
-tags: 回文串
+tags: 
+- 回文串 
+- 牛客
 categories: 水题
 ---
 
