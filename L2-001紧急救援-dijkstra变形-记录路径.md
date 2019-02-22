@@ -1,5 +1,5 @@
 ---
-title: L2-001紧急救援[dijkstra变形+记录路径]
+title: L2-001紧急救援-dijkstra变形-记录路径
 date: 2019-02-22 17:12:55
 categories: 水题
 tags:
@@ -17,7 +17,9 @@ L2-001紧急救援
 
 [L2-001紧急救援](https://pintia.cn/problem-sets/994805046380707840/problems/994805073643683840)
 
-![](L2-001紧急救援[dijkstra变形+记录路径]/timu.png)
+![](L2-001紧急救援-dijkstra变形-记录路径/timu.png)
+
+
 
 # 解析
 
@@ -143,4 +145,3 @@ int main()
 [https://blog.csdn.net/wbb1997/article/details/79119608](https://blog.csdn.net/wbb1997/article/details/79119608)
 
 [https://www.liuchuo.net/archives/2362](https://www.liuchuo.net/archives/2362)
-
