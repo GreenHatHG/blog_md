@@ -11,6 +11,8 @@ CodeForces-236B-求因子个数
 
 # 题目
 
+## [CodeForces-236B](<http://codeforces.com/problemset/problem/236/B>)
+
 ![](CodeForces-236B-求因子个数/timu.jpg)
 
 ## 题目大意
