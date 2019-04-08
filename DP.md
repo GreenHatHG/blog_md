@@ -703,6 +703,59 @@ int main()
 
 <Img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20180803145239.png">
 
+## [LIS变形--有升有降](<http://fzcoj.hustoj.com/problem.php?id=4493>)
+
+![](DP/timu.png)
+
+```c++
+/*
+	Time:54 ms
+    Memory:2252 kb
+    2019-04-08 16:45:30
+*/
+#include<cstdio>
+#include<cmath>
+using namespace std;
+typedef long long ll;
+const int MAXN = 1E5+10;
+int arr[MAXN], dp[MAXN] = {0}, rdp[MAXN] = {0};
+int main()
+{
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for(int i = 1; i <= n; i++)
+        scanf("%d", &arr[i]);
+    for(int i = 1; i <= n; i++)
+    {
+        if(arr[i-1] >= arr[i])
+            dp[i] = dp[i-1] + 1;
+        else
+            dp[i] = 1;
+    }
+     
+    for(int i = n; i >= 1; i--)
+    {
+        if(arr[i+1] >= arr[i])
+            rdp[i] = rdp[i+1] + 1;
+        else
+            rdp[i] = 1;
+    }
+     
+    int n1, n2;
+    while(m--)
+    {
+        scanf("%d %d", &n1, &n2);
+        if(dp[n2] + rdp[n1] >= n2-n1+1)
+            printf("Yes\n");
+        else
+            printf("No\n");
+    }
+    return 0;
+}
+```
+
+
+
 ## 最大递增子数组和
 
 这个是由LIS O(n2)的办法变化而来的，因为O(nlgn)的那个代码的dp数组虽然保存的是一个最长递增序列，但是里面是最小的，不是最大的，所以只能由n2那个办法转变而来
@@ -1030,6 +1083,8 @@ int main()
 和LCS区别是区别就是因为是连续的，如果两个元素不等，那么就要=0了而不能用之前一个状态的最大元素
 
 <img src="https://raw.githubusercontent.com/GreenHatHG/blog_image/master/%E6%9C%80%E9%95%BF%E5%85%AC%E5%85%B1%E5%AD%90%E4%B8%B2%EF%BC%88%E8%BF%9E%E7%BB%AD%EF%BC%89.png">
+
+
 
 
 
