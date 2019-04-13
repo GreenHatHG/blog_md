@@ -1,5 +1,5 @@
 ---
-title: HDU1518-Square(DFS)
+title: HDU1518-Square-DFS
 date: 2019-04-12 22:47:46
 categories: 水题
 tags:
@@ -16,7 +16,7 @@ HDU1518---Square
 
 链接：[HDU1518](http://acm.hdu.edu.cn/showproblem.php?pid=1518)
 
-![](HDU1518-Square(DFS)\timu.png)
+![](HDU1518-Square-DFS/timu.png)
 
 # 分析
 
