@@ -3,7 +3,7 @@ title: hdu-1231最大连续子序列和-dp-记录位置
 date: 2019-04-14 11:47:46
 categories: 水题
 tags:
-- dp
+- DP
 ---
 
 HDU1231最大连续子序列
