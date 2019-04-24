@@ -108,7 +108,7 @@ class MyParent2{
 
 ![](Java虚拟机笔记-常量的本质含义以及反编译出现的部分助记符/3.png)
 
-对样例2反编译后我们可以看到一些助记符以及code那里的一些构造方法,下面看一些助记符
+对样例2反编译后我们可以看到一些助记符以及code那里的一些构造方法,下面看一些助记符(操作码)
 
 - gestatic：得到out这个对象,本身out这个对象是一个静态成员变量
 
@@ -148,4 +148,67 @@ public static final int i = 128;
 ![](Java虚拟机笔记-常量的本质含义以及反编译出现的部分助记符/5.png)
 
 - sipush：表示将一个短整型的常量值(-32768~32767)推送到栈顶
+
+改为
+
+```java
+public static final int i = 1;
+```
+
+![](Java虚拟机笔记-常量的本质含义以及反编译出现的部分助记符/6.png)
+
+- iconst_1：表示将int型1推送至栈顶(`iconst_m1~iconst_5`)
+
+# 助记符
+
+助记符在`jt.jar`包有相关的类实现
+
+比如`ICONST`，在包`com.sun.org.apache.bcel.internal.generic`里面
+
+![](Java虚拟机笔记-常量的本质含义以及反编译出现的部分助记符/7.png)
+
+```java
+public class ICONST extends Instruction
+  implements ConstantPushInstruction, TypedInstruction {
+  private int value;
+
+  /**
+   * Empty constructor needed for the Class.newInstance() statement in
+   * Instruction.readInstruction(). Not to be used otherwise.
+   */
+  ICONST() {}
+
+  public ICONST(int i) {
+    super(com.sun.org.apache.bcel.internal.Constants.ICONST_0, (short)1);
+
+    if((i >= -1) && (i <= 5))
+      opcode = (short)(com.sun.org.apache.bcel.internal.Constants.ICONST_0 + i); // Even works for i == -1
+    else
+      throw new ClassGenException("ICONST can be used only for value between -1 and 5: " +
+                                  i);
+    value = i;
+  }
+```
+
+可以看到，它`icosnt`只有[-1,5]
+
+再比如`sipush`
+
+![](Java虚拟机笔记-常量的本质含义以及反编译出现的部分助记符/8.png)
+
+```java
+public class SIPUSH extends Instruction implements ConstantPushInstruction {
+  private short b;
+
+  /**
+   * Empty constructor needed for the Class.newInstance() statement in
+   * Instruction.readInstruction(). Not to be used otherwise.
+   */
+  SIPUSH() {}
+
+  public SIPUSH(short b) {
+    super(com.sun.org.apache.bcel.internal.Constants.SIPUSH, (short)3);
+    this.b = b;
+  }
+```
 
