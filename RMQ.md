@@ -93,3 +93,70 @@ int rmq(int l,int r)
 }
 ```
 
+# [poj3264--Balanced Lineup](http://poj.org/problem?id=3264)
+
+![](RMQ/timu.png)
+
+题意：有N头奶牛，按1-n编号，并给出他们的高度，有q次询问，求每次询问的一段编号区间内最高的牛和最矮的牛的身高差
+
+```c++
+/*
+G++: 8172K	3579MS	 c++: 7964K	1813MS  
+(微软的C++比开源的G++，快了将近一)
+2019-04-26 19:40:00
+*/
+#include <cstdio>
+#include <algorithm>
+#include <cmath>
+using namespace std;
+
+const int MAXN = 1E5;
+int maxn[MAXN][20], minn[MAXN][20];
+int n, q, num;
+
+void RMQ()
+{
+    for(int j = 1; (1 << j) <= n; j++)
+    {
+        for(int i = 1; i+(1<<j)-1 <= n; i++)
+        {
+            minn[i][j]=min(minn[i][j-1], minn[i+(1<<j-1)][j-1]);
+            maxn[i][j]=max(maxn[i][j-1], maxn[i+(1<<j-1)][j-1]);
+        }
+    }
+}
+
+int RMQ_MAX(int L, int R)
+{
+   //log2()报错的话可以用log的换底公式
+    int k = log(double(R-L+1))/log(2.0);
+    return max(maxn[L][k],maxn[R-(1<<k)+1][k]);
+}
+
+int RMQ_MIN(int L, int R)
+{
+    int k = log(double(R-L+1))/log(2.0);
+    return min(minn[L][k],minn[R-(1<<k)+1][k]);
+}
+
+int main()
+{
+    scanf("%d %d", &n, &q);
+    for(int i = 1; i <= n; i++)
+    {
+        scanf("%d", &num);
+        maxn[i][0] = minn[i][0] = num;
+    }
+    RMQ();
+    int L, R;
+    while(q--)
+    {
+        scanf("%d %d", &L, &R);
+        if(L > R)
+            swap(L, R);
+        printf("%d\n", RMQ_MAX(L, R) - RMQ_MIN(L, R));
+    }
+    return 0;
+}
+```
+
