@@ -1,5 +1,5 @@
 ---
-title: RMQ
+title: RMQ之ST表实现
 date: 2019-04-25 21:02:39
 categories: 算法
 tags:
@@ -11,6 +11,8 @@ tags:
 <!-- more -->
 
 参考：[https://blog.csdn.net/qq_41311604/article/details/79900893](https://blog.csdn.net/qq_41311604/article/details/79900893)
+
+[](https://www.cnblogs.com/YSFAC/p/7189571.html)
 
 # RMQ
 
@@ -30,7 +32,7 @@ tags:
 
 1. 当i=2，j=3时，求dp`[2][3]`
 
-   ![](RMQ/1.png)
+   ![](RMQ之ST表实现/1.png)
 
    因为2^3=8，代表从2开始有8个数，所以范围为[2,9]
    然后我们可以将其按照类似二分的思想将其拆分为两部分
@@ -41,7 +43,7 @@ tags:
 
 2. 推广到普遍情况
 
-   ![](RMQ/2.png)
+   ![](RMQ之ST表实现/2.png)
 
    对照上面例子，因为平分，所以每个区间都可以分到一半的数(因为j是2的次方)，所以j肯定是j-1，`2^(j-1)`代表除以`2^j/2`，接着i就是很常见的位置关系了
    左区间：`dp[i][j-1]`
@@ -75,7 +77,7 @@ void rmq_init()
 k = log2(r - l + 1);
 ```
 
-![](RMQ/3.png)
+![](RMQ之ST表实现/3.png)
 
 然后2^k取到前面那些数的最小值，还没有覆盖整个区间，所以我们可以从后面再取最小值，最后再两者取最小就行了。
 
@@ -95,7 +97,7 @@ int rmq(int l,int r)
 
 # [poj3264--Balanced Lineup](http://poj.org/problem?id=3264)
 
-![](RMQ/timu.png)
+![](RMQ之ST表实现/timu.png)
 
 题意：有N头奶牛，按1-n编号，并给出他们的高度，有q次询问，求每次询问的一段编号区间内最高的牛和最矮的牛的身高差
 

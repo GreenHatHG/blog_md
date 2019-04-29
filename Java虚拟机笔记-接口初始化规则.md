@@ -10,71 +10,78 @@ tags:
 
 <!-- more -->
 
+# 接口初始化规则
+
+当java虚拟机初始化一个类时，要求它的所有父类都已经初始化，但是这条规则不适用于接口
+
+- 在初始化一个类时，并不会先初始化它所实现的接口
+- 在初始化一个接口时，并不会先初始化它的父接口
+
+因此，一个父接口并不会因为它的子接口或者实现类的初始化而初始化，只有当程序首次使用特定接口的静态变量时，才会导致该接口的初始化
+
+
+
 # 样例1
 
 ```java
 public class Main{
-    public static void main(String[] args){
-        System.out.println(Mychild5.b);
+    public static void main(String[] args) {
+        new C();
+        new C();
     }
 }
 
-interface MyParent5{
-    int a = 5;
+class C{
+    {
+        System.out.println("CC"); //每次创建对象时都会输出
+    }
+    public C(){
+        System.out.println("c()");
+    }
 }
-
-interface  Mychild5 extends MyParent5{
-    int b = 6;
-}
+/*ouput:
+CC
+c()
+CC
+c()
+*/
 ```
 
-上面样例输出6，当我们删除`MyParent5.class`后依旧输出6
-
-**所以当一个接口在初始化时，并不要求其父接口都完成了初始化**
-
-----
-
-当我们再把`MyChild5.class`删掉后，发现还是输出6。
-
-接着改变代码，同时将`MyChild5.class`与`MyParent5.class`删掉
-
 ```java
-import java.util.Random;
-
 public class Main{
-    public static void main(String[] args){
-        System.out.println(Mychild5.b);
+    public static void main(String[] args) {
+        new C();
+        new C();
     }
 }
 
-interface MyParent5{
-    int a = 5;
+class C{
+    static{
+        System.out.println("CC"); //创建对象时只会输出一次
+    }
+    public C(){
+        System.out.println("c()");
+    }
 }
-
-interface  Mychild5 extends MyParent5{
-    int b = new Random().nextInt(2);
-}
+/*ouput:
+CC
+c()
+*/
 ```
 
-运行后程序抛出`NoClassDefFound`异常
-
-明显b那个值不是一个确定的值，所以是在运行期才会产生出来，而没有对应的class文件，所以这个常量是不能放到常量池中，如果我们`rebuild`一次再重新生成对应的class后且没有删除，发现还是可以输出的
-
-----
-
-（子类和父类的class文件都有）接着改变一下
-
 ```java
-import java.util.Random;
-
 public class Main{
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println(Mychild5.b);
     }
 }
 
 interface MyParent5{
-    int a = new Random().nextInt(3);
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyParent5 invoked");
+        }
+    };
 }
 
 interface  Mychild5 extends MyParent5{
@@ -82,102 +89,125 @@ interface  Mychild5 extends MyParent5{
 }
 ```
 
-此时输出5，改变一下
-
-```java
-import java.util.Random;
-
-public class Main{
-    public static void main(String[] args){
-        System.out.println(Mychild5.b);
-    }
-}
-
-interface MyParent5{
-    int a = new Random().nextInt(3);
-}
-
-interface  Mychild5 extends MyParent5{
-    int b = new Random().nextInt(6);
-}
-```
-
-此时输出3
-
-然后我们把`MyParent5.class`删除，运行后程序抛出`NoClassDefFound`异常
-
-接着把a的值改成5并且删除`MyParent5.class`
-
-```java
-import java.util.Random;
-
-public class Main{
-    public static void main(String[] args){
-        System.out.println(Mychild5.b);
-    }
-}
-
-interface MyParent5{
-    int a = 5;
-}
-
-interface  Mychild5 extends MyParent5{
-    int b = new Random().nextInt(6);
-}
-```
-
-运行后程序抛出`NoClassDefFound`异常
-
-所以
-
-**只有在真正使用到父接口的时候（如引用接口中所定义的常量时）才会初始化**
+程序输出5，并没有`MyParent5 invoked`
 
 # 样例2
 
-```java
-import java.util.Random;
-
-public class Main{
-    public static void main(String[] args){
-        System.out.println(Mychild5.b);
-    }
-}
-
-interface MyParent5{
-    int a = new Random().nextInt(3);
-}
-
-interface  Mychild5 extends MyParent5{
-    int b = 5;
-}
-```
-
-把`MyParent5.class`删除后，发现程序依旧可以输出
-
-然后我们改为
+把接口改成类
 
 ```java
-import java.util.Random;
-
 public class Main{
-    public static void main(String[] args){
+    public static void main(String[] args) {
         System.out.println(Mychild5.b);
     }
 }
 
 class MyParent5{
-    int a = new Random().nextInt(3);
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyParent5 invoked");
+        }
+    };
 }
 
 class  Mychild5 extends MyParent5{
-    int b = 5;
+    public static int b = 5;
 }
 ```
 
-把`MyParent5.class`删除后，运行后程序抛出`NoClassDefFound`异常
+则两个都会输出
 
-对于一个接口来说，它里面一个属性就是`public static final`的，而对于一个类来说，如果不加final的话，它就不是常量
+如果变b变为final的话
 
-所以它就不会被纳入常量池中，所以在初始化时会导致父类的初始化。
+```java
+public class Main{
+    public static void main(String[] args) {
+        System.out.println(Mychild5.b);
+    }
+}
 
-（不会初始化不意味着不会被加载）
+class MyParent5{
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyParent5 invoked");
+        }
+    };
+}
+
+class  Mychild5 extends MyParent5{
+    public static final int b = 5;
+}
+
+```
+
+正好验证了之前学的结论，b已经被放到常量池中，这时候与`Mychild5`和`MyParent5`都没有关系，即使删掉这两者`.class`文件都可以运行
+
+# 样例3
+
+```java
+public class Main{
+    public static void main(String[] args) {
+        System.out.println(Mychild5.b);
+    }
+}
+interface MyGrandpa{
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyGrandpa invoked");
+        }
+    };
+class MyParent5 extends MyGrandpa{
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyParent5 invoked");
+        }
+    };
+}
+
+class Mychild5 extends MyParent5{
+    public static final int b = 5;
+}
+```
+
+只输出5
+
+因为输出b并不会导致MyParent5的初始化，更不会导致接口的初始化。
+
+改成
+
+```java
+public class Main{
+    public static void main(String[] args) {
+        System.out.println(Mychild5.b);
+    }
+}
+class MyGrandpa{
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyGrandpa invoked");
+        }
+    };
+}
+class MyParent5 extends MyGrandpa{
+    public static Thread thread = new Thread(){
+        {
+            System.out.println("MyParent5 invoked");
+        }
+    };
+}
+
+class Mychild5 extends MyParent5{
+    public static int b = 5;
+}
+```
+
+则三者都会输出
+
+其加载顺序
+
+```java
+[Loaded MyGrandpa from file:/home/cc/IdeaProjects/test/out/production/test/]
+[Loaded MyParent5 from file:/home/cc/IdeaProjects/test/out/production/test/]
+[Loaded Mychild5 from file:/home/cc/IdeaProjects/test/out/production/test/]
+```
+
