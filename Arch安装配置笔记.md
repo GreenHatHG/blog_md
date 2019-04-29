@@ -525,3 +525,6 @@ polkit.addRule(function(action, subject) {
 
 4. `yay -S jdk8`
 
+### 显卡
+
+https://wiki.archlinux.org/index.php/Xorg
