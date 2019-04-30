@@ -116,7 +116,7 @@ mount /dev/sdx4 /mnt/boot/efi
 vi /etc/pacman.d/mirrorlist
 ```
 
-在列表中越前的镜像在下载软件包时有越高的优先权，将中科大源复制到第一行
+在列表中越前的镜像在下载软件包时有越高的优先权，将清华源复制到第一行
 
 ### 安装基本系统
 
@@ -148,7 +148,6 @@ arch-chroot /mnt
 
 ```
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-
 ```
 
 硬件时间设置，默认为`UTC`时间
@@ -202,7 +201,7 @@ passwd
 ### 安装引导
 
 ```
-pacman -S grub
+pacman -S grub efibootmgr
 ```
 
 - 非uefi
@@ -252,7 +251,7 @@ reboot
 ### 新建用户
 
 ```
-useradd -d /home cc
+useradd -m -G wheel cc
 passwd cc
 ```
 
@@ -265,29 +264,21 @@ nano /etc/sudoers
 为你刚才创建的用户 添加sudo权限
 ```
 
-### 换源
+### 添加archcn源
 
-1. ustc置顶
+在 `/etc/pacman.conf` 文件末尾添加两行
 
 ```
-vim /etc/pacman.d/mirrorlist
+[archlinuxcn]
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 ```
 
-2. archlinuxcn
-
-   在 `/etc/pacman.conf` 文件末尾添加两行
-
-   ```
-   [archlinuxcn]
-   Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
-   ```
-
-   然后请安装 `archlinuxcn-keyring` 包以导入` GPG key`。
+然后请安装 `archlinuxcn-keyring` 包以导入` GPG key`。
 
 ### 常用软件
 
 ```shell
- pacman -S git make cmake openssh gcc g++ gdb vim
+ pacman -S git make cmake openssh gcc g++ gdb vim wget
 ```
 
 ### 桌面环境
@@ -337,12 +328,8 @@ yay实际上也是一个软件包，我们可以把它看成是对pacman的包�
 **安装**
 
 ```shell
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si
+pacman -S yay
 ```
-
-
 
 ### zsh
 
@@ -372,7 +359,7 @@ git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-m
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 ```
 
-5. 配置
+5. 配置`~/.zshrc`
 
 ```she
 plugins=( zsh-autosuggestions zsh-syntax-highlighting)
@@ -391,8 +378,6 @@ plugins=( zsh-autosuggestions zsh-syntax-highlighting)
 - GTK3+前端小程序，工作在Xorg环境下，带有一个系统托盘。 
 `pacman -S network-manager-applet`
 - kde可以只安装plasma-nm，然后通过 面板的选项 > 添加部件 > 网络 来把它添加到KDE的任务栏上。
-
-
 
 ### 中文输入法
 **搜狗输入法**
@@ -415,7 +400,9 @@ export QT_IM_MODULE="fcitx"
 
 1. 安装noto全系字体
 
-`pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji`
+`pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-monaco`
+
+`ttf-monaco`:终端字体
 
 2. 安装meslo字体
 
@@ -424,31 +411,26 @@ export QT_IM_MODULE="fcitx"
 3. 拉取配置文件
 
 ```shell
-wget https://github.com/ohmyarch/fontconfig-zh-cn/blob/master/fonts.conf ~/.config/fontconfig
+wget https://github.com/ohmyarch/fontconfig-zh-cn/blob/master/fonts.conf ~/.fontconfig/fonts.conf
 ```
 
-4. 刷新字体缓存
-
-```shell
-fc-cache --force --verbose
-fc-cache-32 --force --verbose
-```
-
-5. 设置dpi
+4. 设置dpi
 
 用[CX CALC](http://pxcalc.com/)这个工具计算出对应你显示器分辨率的DPI值，然后再设置（可适当调高，本机100，可调107）
 
-6. 设置字体
+5. 设置字体
 
 设置等宽字体为`Monospace`
 
-其他为`Sans Serif`
+其他为`noto Sans sjk sc`
 
-7. 使GTK程序能够显示彩色Emoji
+6. 使GTK程序能够显示彩色Emoji
 
 `yay -S cairo-coloredemoji`
 
-8. 
+7. 刷新缓存然后重启
+
+`fc-cache --force --verbose`
 
 ### synaps
 
@@ -512,7 +494,7 @@ polkit.addRule(function(action, subject) {
 
 `pacman -S firefox chrome filezilla teamviewer `
 
-### 图形
+### 图形软件
 
 `pacman -S flameshot`
 
@@ -528,3 +510,34 @@ polkit.addRule(function(action, subject) {
 ### 显卡
 
 https://wiki.archlinux.org/index.php/Xorg
+
+`pacman -S xf86-video-amdgpu mesa`
+
+### 美化
+
+![](Arch安装配置笔记/1.png)
+
+1. 主题Materia KDE
+
+https://github.com/PapirusDevelopmentTeam/materia-kde
+
+``pacman -S materia-kde kvantum-theme-materia``
+
+2. 图标papirus
+
+https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+
+``pacman -S papirus-icon-theme``
+
+3. 光标mac--capitaine-cursors
+
+https://github.com/keeferrourke/capitaine-cursors
+
+`yay -S capitaine-cursors`
+
+### KDE
+
+```shell
+pacman -S dolphin dolphin-plugins konsole
+```
+
