@@ -34,19 +34,19 @@ ping -c 5 www.baidu.com
 
 # 更新系统时间
 
-### 操作
+## 操作
 
 ```
  timedatectl set-ntp true
 ```
 
-查看服务状态
+## 查看服务状态
 
 ```
 timedatectl status
 ```
 
-### 原因
+原因
 
 - 系统时间不对可能造成`ssl`连接失败导致安装出错
 
@@ -55,13 +55,13 @@ timedatectl status
 
 # 分区
 
-### 检测分区情况
+## 检测分区情况
 
 ```
 lsblk
 ```
 
-### 分区
+## 分区
 
 ```
 cfdisk /dev/sdx
@@ -69,7 +69,7 @@ cfdisk /dev/sdx
 
 ![](Arch安装配置笔记/fenqu.png)
 
-### 格式化分区
+## 格式化分区
 
 1. 格式化成`ext4`
 
@@ -84,7 +84,7 @@ mkswap /dev/sdX3
 swapon /dev/sdX3
 ```
 
-### 挂载分区
+## 挂载分区
 
 1. 首先将根分区 [挂载](https://wiki.archlinux.org/index.php/Mount) 到 `/mnt`
 
@@ -110,7 +110,7 @@ mount /dev/sdx4 /mnt/boot/efi
 
 # 安装
 
-### 选择镜像源
+## 选择镜像源
 
 ```
 vi /etc/pacman.d/mirrorlist
@@ -118,7 +118,7 @@ vi /etc/pacman.d/mirrorlist
 
 在列表中越前的镜像在下载软件包时有越高的优先权，将清华源复制到第一行
 
-### 安装基本系统
+## 安装基本系统
 
 ```
  pacstrap /mnt base base-devel
@@ -126,7 +126,7 @@ vi /etc/pacman.d/mirrorlist
 
 # 配置系统
 
-### Fstab
+## Fstab
 
 用以下命令生成 [fstab](https://wiki.archlinux.org/index.php/Fstab) 文件 (用 `-U` 或 `-L` 选项设置UUID 或卷标)：
 
@@ -134,7 +134,7 @@ vi /etc/pacman.d/mirrorlist
 genfstab -U /mnt >> /mnt/etc/fstab
 ```
 
-### Chroot
+## Chroot
 
 [Change root](https://wiki.archlinux.org/index.php/Change_root) 到新安装的系统：
 
@@ -142,7 +142,7 @@ genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 ```
 
-### 时区
+## 时区
 
 设置时区
 
@@ -156,7 +156,7 @@ ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 hwclock --systohc 
 ```
 
-### 本地化
+本地化
 
 `/etc/locale.gen` 是一个仅包含注释文档的文本文件。指定您需要的本地化类型，只需移除对应行前面的注释符号（`＃`）即可，建议选择带 `UTF-8` 的项
 
@@ -174,7 +174,7 @@ zh_TW.UTF-8 UTF-8
  echo LANG=en_US.UTF-8 > /etc/locale.conf
 ```
 
-### 网络
+## 网络
 
 设置主机名
 
@@ -191,14 +191,14 @@ echo cc > /etc/hostname
 127.0.1.1	myhostname.localdomain	myhostname
 ```
 
-### Root密码
+## Root密码
 
 ```
 passwd
 ```
 
 
-### 安装引导
+## 安装引导
 
 ```
 pacman -S grub efibootmgr
@@ -224,13 +224,13 @@ grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
  grub-mkconfig -o /boot/grub/grub.cfg
 ```
 
-### 安装微码
+## 安装微码
 
 ```
 pacman -S amd-ucode
 ```
 
-### 无线连接
+## 无线连接
 
 ```
 pacman -S iw wpa_supplicant dialog
@@ -246,9 +246,7 @@ reboot
 
 # 配置新系统
 
-参考：[Linux下终极字体配置方案]([https://ohmyarch.github.io/2017/01/15/Linux%E4%B8%8B%E7%BB%88%E6%9E%81%E5%AD%97%E4%BD%93%E9%85%8D%E7%BD%AE%E6%96%B9%E6%A1%88/](https://ohmyarch.github.io/2017/01/15/Linux下终极字体配置方案/))
-
-### 新建用户
+## 新建用户
 
 ```
 useradd -m -G wheel cc
@@ -264,7 +262,7 @@ nano /etc/sudoers
 为你刚才创建的用户 添加sudo权限
 ```
 
-### 添加archcn源
+## 添加archcn源
 
 在 `/etc/pacman.conf` 文件末尾添加两行
 
@@ -275,13 +273,40 @@ Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
 
 然后请安装 `archlinuxcn-keyring` 包以导入` GPG key`。
 
-### 常用软件
+## 常用软件
 
 ```shell
- pacman -S git make cmake openssh gcc g++ gdb vim wget
+ pacman -S git make cmake openssh gcc g++ gdb vim wget sshpass net-tools ntfs-3g
 ```
 
-### 桌面环境
+## linux-lts内核
+
+更换为lts内核
+
+```
+ sudo pacman -S linux-lts
+```
+
+卸载原内核
+
+```shell
+$ pacman -Q | grep linux
+archlinux-appstream-data 20190424-1
+archlinux-keyring 20190123-2
+archlinuxcn-keyring 20190422-1
+libutil-linux 2.33.2-1
+linux 5.0.10.arch1-1
+linux-api-headers 5.0.7-1
+linux-firmware 20190424.4b6cf2b-1
+linux-lts 4.19.37-1
+util-linux 2.33.2-1
+$ pacman -R linux
+$  sudo grub-mkconfig -o /boot/grub/grub.cfg
+```
+
+## 桌面环境
+
+![](Arch安装配置笔记/3.png)
 
 1. 安装`xorg`
 
@@ -319,7 +344,7 @@ Server = https://mirrors.tuna.tsinghua.edu.cn/archlinuxcn/$arch
    systemctl enable sddm
    ```
 
-### yay
+## yay
 
 Arch拥有一个强大的用户库AUR即Arch User Repository，为我们提供了官方包之外的各种软件包，一些闭源的软件包也可以在上面找到，可以说AUR极大地丰富了软件包的种类与数量，并可以配合yay这样的工具为用户省下大量安装、更新软件包的时间。
 
@@ -331,7 +356,7 @@ yay实际上也是一个软件包，我们可以把它看成是对pacman的包�
 pacman -S yay
 ```
 
-### zsh
+## zsh
 
 1. 安装
 
@@ -365,7 +390,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 plugins=( zsh-autosuggestions zsh-syntax-highlighting)
 ```
 
-### 配置网络
+## 配置网络
 1. 安装networkmanager
 
 `pacman -S networkmanager`
@@ -379,7 +404,7 @@ plugins=( zsh-autosuggestions zsh-syntax-highlighting)
 `pacman -S network-manager-applet`
 - kde可以只安装plasma-nm，然后通过 面板的选项 > 添加部件 > 网络 来把它添加到KDE的任务栏上。
 
-### 中文输入法
+## 中文输入法
 **搜狗输入法**
 
 ```shell
@@ -396,43 +421,44 @@ export QT_IM_MODULE="fcitx"
 ```
 可以解决一些软件无法调出fcitx的问题。
 
-### 字体
+## 字体
 
-1. 安装noto全系字体
+参考:
 
-`pacman -S noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-monaco`
+archwiki:
 
-`ttf-monaco`:终端字体
+- Localization/Simplified Chinese
+- Font Configuration/Chinese 
 
-2. 安装meslo字体
-
-`yay -S ttf-meslo`
-
-3. 拉取配置文件
+1. 安装字体
 
 ```shell
-wget https://github.com/ohmyarch/fontconfig-zh-cn/blob/master/fonts.conf ~/.fontconfig/fonts.conf
+pacman -S ttf-dejavu ttf-monaco
+pacman -U ttf-ms-win10-other-10.0.17763.348-1-any.pkg.tar.xz
 ```
 
-4. 设置dpi
+2. 移动美化包
 
-用[CX CALC](http://pxcalc.com/)这个工具计算出对应你显示器分辨率的DPI值，然后再设置（可适当调高，本机100，可调107）
+```shell
+cp -r fonts_infinality /etc/fonts
+chmod -R 755 /etc/fonts
+cp fonts_infinality/fonts.conf ~/.config/fontconfig/fonts.conf
+```
 
-5. 设置字体
+3. 配置终端字体为`monaco`
+4. 配置系统字体
 
-设置等宽字体为`Monospace`
+![](Arch安装配置笔记/2.png)
 
-其他为`noto Sans sjk sc`
-
-6. 使GTK程序能够显示彩色Emoji
+5. 使GTK程序能够显示彩色Emoji
 
 `yay -S cairo-coloredemoji`
 
-7. 刷新缓存然后重启
+6. 刷新缓存然后重启
 
-`fc-cache --force --verbose`
+`fc-cache -fv`
 
-### synaps
+## synaps
 
 Synapse是一个快速的软件启动器，可以方便地查找安装的软件，设置快捷键使用再也不用找软件入口了。
 
@@ -440,22 +466,32 @@ Synapse是一个快速的软件启动器，可以方便地查找安装的软件�
 pacman -S synapse
 ```
 
-### VirtualBox
+## 剪贴板
+
+删除自带的klipper
+
+`rm -rf /usr/share/plasma/plasmoids/org.kde.plasma.clipboard`
+
+安装`copyq`
+
+`pacman -S copyq`
+
+## VirtualBox
 
 `pacman -S virtualbox virtualbox-ext-vnc virtualbox-guest-iso virtualbox-host-modules-arch`
 再去官网下载Oracle VM VirtualBox Extension Pack ，在设置中导入使用。安装windows的过程不在这里讲解，记得安装之后在windows内安装扩展客户端软件即可。
 
-### 系统备份
+## 系统备份
 
 `pacman -S timeshifts`
 
-### 声卡
+## 声卡
 
 `pacman -S alsa-utils pulseaudio pulseaudio-bluetooth`
 图形化
 `pacman -S pavucontrol`
 
-### 蓝牙
+## 蓝牙
 
 ```shell
 sudo pacman -S bluez bluez-utils
@@ -482,23 +518,30 @@ polkit.addRule(function(action, subject) {
 });
 ```
 
-### 文本工具
+## 文本工具
 
-` pacman -S foxitreader typora visual-studio-code-bin`
+` pacman -S foxitreader typora visual-studio-code-bin mousepad` 
 
-### 编译器
+## 编译器
 
 `pacman -S codeblocks`
 
-### 互联网工具
+## 互联网工具
 
-`pacman -S firefox chrome filezilla teamviewer `
+`pacman -S firefox chromium filezilla teamviewer `
 
-### 图形软件
+**teamviewer not ready**
 
-`pacman -S flameshot`
+```shell
+sudo systemctl start teamviewerd
+sudo systemctl enable teamviewerd
+```
 
-### jdk8
+## 图形软件
+
+`pacman -S flameshot nomacs`
+
+## jdk8
 
 1. 到[https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载jdk8
 
@@ -507,13 +550,13 @@ polkit.addRule(function(action, subject) {
 
 4. `yay -S jdk8`
 
-### 显卡
+## 显卡
 
 https://wiki.archlinux.org/index.php/Xorg
 
 `pacman -S xf86-video-amdgpu mesa`
 
-### 美化
+## 美化
 
 ![](Arch安装配置笔记/1.png)
 
@@ -535,9 +578,35 @@ https://github.com/keeferrourke/capitaine-cursors
 
 `yay -S capitaine-cursors`
 
-### KDE
+## KDE系部分软件
 
 ```shell
-pacman -S dolphin dolphin-plugins konsole
+pacman -S dolphin dolphin-plugins konsole ark
+```
+
+## 解决问题
+
+1. `systemd-backlight@backlight:acpi_video0.service failed`
+
+添加backlight文件夹下的文件名到grub文件,然后禁止上面的service
+
+```shell
+$ ls /sys/class/backlight/
+radeon_bl0
+$ sudo vim /etc/default/grub
+GRUB_CMDLINE_LINUX_DEFAULT="quiet acpi_backlight=radeon_bl0"
+$ sudo grub-mkconfig -o /boot/grub/grub.cfg
+$ sudo systemctl mask systemd-backlight@backlight:acpi_video0.service
+$ reboot
+```
+
+## Docker
+
+```shell
+pacman -S docker
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo groupadd docker
+sudo gpasswd -a ${USER} docker
 ```
 
