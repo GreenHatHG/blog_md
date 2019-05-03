@@ -423,13 +423,10 @@ export QT_IM_MODULE="fcitx"
 
 ## 字体
 
-参考:
-
-archwiki:
+参考:archwiki:
 
 - Localization/Simplified Chinese
 - Font Configuration/Chinese 
-
 1. 安装字体
 
 ```shell
@@ -446,6 +443,7 @@ cp fonts_infinality/fonts.conf ~/.config/fontconfig/fonts.conf
 ```
 
 3. 配置终端字体为`monaco`
+
 4. 配置系统字体
 
 ![](Arch安装配置笔记/2.png)
@@ -475,6 +473,12 @@ pacman -S synapse
 安装`copyq`
 
 `pacman -S copyq`
+
+## xournal
+
+```shell
+yay -S xournal
+```
 
 ## VirtualBox
 
