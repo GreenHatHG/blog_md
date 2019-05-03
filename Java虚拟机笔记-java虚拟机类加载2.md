@@ -140,7 +140,7 @@ public class Sample{
 
 3. 调用类的静态方法
 
-4. 发射（如Class.forName("com.test.test")）
+4. 反射（如Class.forName("com.test.test")）
 
 5. 初始化一个类的子类
 
