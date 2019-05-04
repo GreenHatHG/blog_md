@@ -61,6 +61,7 @@ class C{
 null
 sun.misc.Launcher$AppClassLoader@18b4aac2
 */
+//18b4aac2是它的hash code
 ```
 
 可以看到Main是由系统类加载器加载的
