@@ -588,6 +588,17 @@ https://github.com/keeferrourke/capitaine-cursors
 pacman -S dolphin dolphin-plugins konsole ark
 ```
 
+1. Simple System Monitor
+
+```shell
+# 下载https://github.com/dhabyx/plasma-simpleMonitor/releases
+plasmapkg2 -i plasma-simpleMonitor-0.6.plasmoid
+```
+
+2. 桌面添加网络监视器
+
+![](Arch安装配置笔记/4.png)
+
 ## 解决问题
 
 1. `systemd-backlight@backlight:acpi_video0.service failed`
