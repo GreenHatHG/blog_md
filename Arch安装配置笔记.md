@@ -625,3 +625,23 @@ sudo groupadd docker
 sudo gpasswd -a ${USER} docker
 ```
 
+## 划词翻译
+
+参考：[https://blog.einverne.info/post/2018/08/goldendict.html](https://blog.einverne.info/post/2018/08/goldendict.html)
+
+```shell
+pacman -S goldendict
+```
+
+1. 有道的源
+
+`http://dict.youdao.com/search?q=%GDWORD%&ue=utf8`
+
+2. Chinese Wikipedia
+
+`https://zh.wikipedia.org/w`
+
+3. Chinese Wiktionary
+
+`https://zh.wiktionary.org/w`
+
