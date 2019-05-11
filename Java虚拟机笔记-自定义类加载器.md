@@ -94,16 +94,61 @@ protected final Class<?> defineClass(byte[] b, int off, int len)
         throws ClassFormatError
     {
     	/**
-    	* @param name 类的预期二进制名称，如果未知，则为null
-    	*        b 组成类数据的字节数组
-        *        off 数据起始位置
-        *        len 数组长度 
-        *        ProtectionDomain 保护域（保护域定义了授予一段特定代码的所有权限）
-        * @return 从数据创建的Class对象，以及可选的ProtectionDomain
-    	*/
+         * @return 从数据创建的Class对象，以及可选的ProtectionDomain
+    	 */
         return defineClass(null, b, off, len, null);
     }
 ```
+
+```java
+/**
+  * 将字节数组转换为类别类的实例，其中可选的是ProtectionDomain
+  * 如果域是null，则默认的域名将被作为文件规定分配给类defineClass(String, byte[], int, int)
+  * 在类可以使用之前，必须解决域名问题
+  * 包中定义的第一个类决定了该包中定义的所有后续类必须包含的精确的证书集
+  * 一套类的证书是从类ProtectionDomain中的CodeSource获得的
+  * 添加到该包中的任何类必须包含相同的证书集， 否则将抛出SecurityException
+  * 请注意，如果name为null ，则不执行此检查
+  * 你应该总是传递你所定义的类的binary name以及字节。 这确保你所定义的类确实是你认为的类。
+  * 指定name不能以“java.”开始，因为在所有的类“java.*包只能由引导类装载程序来限定。
+  * 如果name不是null，它必须等于binary name类的由字节数组指定” b “，否则将抛出一个NoClassDefFoundError
+  * @param name 预期的类二进制名字，如果不知道则为null
+  *       b    构成类数据的字节数组
+  *       off  字节数组起始位置
+  *       len  字节数组长度
+  *       protectionDomain 该类的ProtectionDomain（保护域（保护域定义了授予一段特定代码的所有权限）） 
+  * @return 从传入的数据中创建的类对象，可选ProtectionDomain 
+  */
+protected final Class<?> defineClass(String name, byte[] b, int off, int len,
+                                         ProtectionDomain protectionDomain)
+        throws ClassFormatError
+    {
+        protectionDomain = preDefineClass(name, protectionDomain);
+        String source = defineClassSourceLocation(protectionDomain);
+        Class<?> c = defineClass1(name, b, off, len, protectionDomain, source);
+        postDefineClass(c, protectionDomain);
+        return c;
+    }
+```
+
+
+
+## findClass
+
+```java
+/**
+ * 查找具有指定二进制名称的类。此方法应由遵循委托模型的类加载器实现覆盖以加载类，
+ * 并且在检查所请求类的父类加载器  之后将由loadClass方法调用
+ * @param name 类的二进制名
+ * @retrun 生成的class对象
+ * @throws ClassNotFoundException
+ */
+protected Class<?> findClass(String name) throws ClassNotFoundException {
+        throw new ClassNotFoundException(name);
+}
+```
+
+findClass默认是空的,所以得重写这个方法.
 
 ## 总结流程
 
@@ -112,31 +157,28 @@ protected final Class<?> defineClass(byte[] b, int off, int len)
 # 简单实现自定义类加载器
 
 ```java
+package indi.greenhat.jvm;
+
 import java.io.*;
 
 //用户自定义类加载器必须继承ClassLoader类
-public class Main extends ClassLoader{
+public class CustomClassLoader extends ClassLoader{
 
     private String classLoaderName;
 
     //类的扩展名
     private final String fileExtension = ".class";
 
-    public Main(String classLoaderName){
+    public CustomClassLoader(String classLoaderName){
         //使用方法getSystemClassLoader（）返回的ClassLoader作为父类加载器创建新的类加载器
         super();
         this.classLoaderName = classLoaderName;
     }
 
-    public Main(String classLoaderName, ClassLoader parent){
+    public CustomClassLoader(String classLoaderName, ClassLoader parent){
         //使用指定的父类加载器创建新的类加载器以进行委派
         super(parent);
         this.classLoaderName = classLoaderName;
-    }
-
-    @Override
-    public String toString(){
-        return "[" + this.classLoaderName + "]";
     }
 
     @Override
@@ -153,8 +195,7 @@ public class Main extends ClassLoader{
         try{
             //转换为磁盘对应的地址
             name = name.replace(".", "/");
-            String projectPath = "/home/cc/IdeaProjects/test/out/production/test/";
-            is = new FileInputStream(new File(projectPath + name + this.fileExtension));
+            is = new FileInputStream(new File(name + this.fileExtension));
             baos = new ByteArrayOutputStream();
 
             int ch = 0;
@@ -176,16 +217,20 @@ public class Main extends ClassLoader{
     }
 
     public static void test(ClassLoader classLoader) throws Exception {
-        Class<?> clazz = classLoader.loadClass("Main");
+        Class<?> clazz = classLoader.loadClass("indi.greenhat.jvm.Test");
         Object object = clazz.newInstance();
 
         System.out.println(object);
     }
 
     public static void main(String[] args) throws Exception {
-        Main loader1 = new Main("loader1");
+        CustomClassLoader loader1 = new CustomClassLoader("loader1");
         test(loader1);
     }
 }
 ```
+
+输出:
+
+`indi.greenhat.jvm.Test@74a14482`
 
