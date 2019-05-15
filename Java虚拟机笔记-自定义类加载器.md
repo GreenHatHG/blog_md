@@ -224,6 +224,7 @@ public class CustomClassLoader extends ClassLoader{
     }
 
     public static void main(String[] args) throws Exception {
+        //创建一个自定义类加载器，其父加载器是系统类加载器
         CustomClassLoader loader1 = new CustomClassLoader("loader1");
         test(loader1);
     }
@@ -233,4 +234,332 @@ public class CustomClassLoader extends ClassLoader{
 输出:
 
 `indi.greenhat.jvm.Test@74a14482`
+
+# 简单类加载器修改1
+
+修改部分已经用标识起来
+
+```java
+/*************************************
+ * update
+ ************************************/
+```
+
+从标识部分我们可以看出，在`findClass`和`test`增加了几句输出语句，为了输出类的加载器
+
+```java
+package indi.greenhat.jvm;
+
+import java.io.*;
+
+//用户自定义类加载器必须继承ClassLoader类
+public class CustomClassLoader extends ClassLoader{
+
+    private String classLoaderName;
+
+    //类的扩展名
+    private final String fileExtension = ".class";
+
+    public CustomClassLoader(String classLoaderName){
+        //使用方法getSystemClassLoader（）返回的ClassLoader作为父类加载器创建新的类加载器
+        super();
+        this.classLoaderName = classLoaderName;
+    }
+
+    public CustomClassLoader(String classLoaderName, ClassLoader parent){
+        //使用指定的父类加载器创建新的类加载器以进行委派
+        super(parent);
+        this.classLoaderName = classLoaderName;
+    }
+
+
+    @Override
+    protected Class<?> findClass(String className) throws ClassNotFoundException{
+        /*************************************
+         * update
+         ************************************/
+        System.out.println("findClass invoked: " + className);
+        System.out.println("class loader name: " + this.classLoaderName);
+        /*************************************
+         * update
+         ************************************/
+        byte[] data = this.loadClassDate(className);
+        return this.defineClass(className, data, 0, data.length);
+    }
+
+    private byte[] loadClassDate(String name){
+        InputStream is = null;
+        byte[] data = null;
+        ByteArrayOutputStream baos = null;
+
+        try{
+            //转换为磁盘对应的地址
+            name = name.replace(".", "/");
+            is = new FileInputStream(new File(name + this.fileExtension));
+            baos = new ByteArrayOutputStream();
+
+            int ch = 0;
+            while((ch = is.read()) != -1){
+                baos.write(ch);
+            }
+            data = baos.toByteArray();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                is.close();
+                baos.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return data;
+    }
+
+    public static void test(ClassLoader classLoader) throws Exception {
+        Class<?> clazz = classLoader.loadClass("indi.greenhat.jvm.Test");
+        Object object = clazz.newInstance();
+
+        System.out.println(object);
+        /*************************************
+         * update
+         ************************************/
+        System.out.println("----getClassLoader-----");
+        System.out.println(clazz.getClassLoader());
+        /*************************************
+         * update
+         ************************************/
+    }
+
+    public static void main(String[] args) throws Exception {
+        CustomClassLoader loader1 = new CustomClassLoader("loader1");
+        test(loader1);
+
+    }
+}
+
+```
+
+输出：
+
+```java
+indi.greenhat.jvm.Test@74a14482
+----getClassLoader-----
+sun.misc.Launcher$AppClassLoader@18b4aac2
+```
+
+可以看出该类是由系统类加载器加载的，而不是由我们自定义的类加载器加载的。
+
+为什么呢？因为我们使用了`classLoader`的`super`办法，使用方法`getSystemClassLoader（）`返回的`ClassLoader`作为父类加载器创建新的类加载器，根据双亲委派机制，会先让双亲去尝试执行，因为要加载的类符合系统类加载器加载要求，所以是系统类加载器加载的。
+
+---
+
+所以系统类加载器是类`indi.greenhat.jvm.Test`的定义类加载器，而系统类加载器和`customClassLoader`是类`indi.greenhat.jvm.Test`的初始类加载器
+
+> 若一个类加载器能够成功加载Test类，那么这个类加载器被称为定义类加载器，所有能够成功返回Class对象引用的类加载器（包括定义类加载器）都被称为初始类加载器
+
+# 简单类加载器修改2
+
+```java
+package indi.greenhat.jvm;
+
+import java.io.*;
+
+//用户自定义类加载器必须继承ClassLoader类
+public class CustomClassLoader extends ClassLoader{
+
+    private String classLoaderName;
+
+    //类的扩展名
+    private final String fileExtension = ".class";
+
+    private  String path;
+
+    public void setPath(String path){
+        this.path = path;
+    }
+
+    public CustomClassLoader(String classLoaderName){
+        //使用方法getSystemClassLoader（）返回的ClassLoader作为父类加载器创建新的类加载器
+        super();
+        this.classLoaderName = classLoaderName;
+    }
+
+    public CustomClassLoader(String classLoaderName, ClassLoader parent){
+        //使用指定的父类加载器创建新的类加载器以进行委派
+        super(parent);
+        this.classLoaderName = classLoaderName;
+    }
+
+
+    @Override
+    protected Class<?> findClass(String className) throws ClassNotFoundException{
+        System.out.println("findClass invoked: " + className);
+        System.out.println("class loader name: " + this.classLoaderName);
+        byte[] data = this.loadClassDate(className);
+        return this.defineClass(className, data, 0, data.length);
+    }
+
+    private byte[] loadClassDate(String name){
+        InputStream is = null;
+        byte[] data = null;
+        ByteArrayOutputStream baos = null;
+
+        try{
+            //转换为磁盘对应的地址
+            name = name.replace(".", "/");
+            is = new FileInputStream(new File(this.path+ name + this.fileExtension));
+            baos = new ByteArrayOutputStream();
+
+            int ch = 0;
+            while((ch = is.read()) != -1){
+                baos.write(ch);
+            }
+            data = baos.toByteArray();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try{
+                is.close();
+                baos.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return data;
+    }
+
+    public static void main(String[] args) throws Exception {
+        CustomClassLoader loader1 = new CustomClassLoader("loader1");
+        loader1.setPath("/home/cc/IdeaProjects/test/out/production/test/");
+        Class<?> clazz = loader1.loadClass("indi.greenhat.jvm.Test");
+        Object object = clazz.newInstance();
+
+        System.out.println(object);
+        System.out.println(clazz.hashCode());
+        System.out.println("----getClassLoader-----");
+        System.out.println(clazz.getClassLoader());
+        System.out.println();
+
+        CustomClassLoader loader2 = new CustomClassLoader("loader2");
+        loader2.setPath("/home/cc/IdeaProjects/test/out/production/test/");
+        Class<?> clazz2 = loader2.loadClass("indi.greenhat.jvm.Test");
+        Object object2 = clazz2.newInstance();
+
+        System.out.println(object2);
+        System.out.println(clazz2.hashCode());
+        System.out.println("----getClassLoader-----");
+        System.out.println(clazz2.getClassLoader());
+
+    }
+}
+```
+
+输出：
+
+```java
+indi.greenhat.jvm.Test@74a14482
+356573597
+----getClassLoader-----
+sun.misc.Launcher$AppClassLoader@18b4aac2
+
+indi.greenhat.jvm.Test@677327b6
+356573597
+----getClassLoader-----
+sun.misc.Launcher$AppClassLoader@18b4aac2
+```
+
+可以看到，我们定义的两个加载器是一样并且是由系统类加载器加载的。前面所讲，如果该类被加载过了，那么就不会重新加载了。
+
+-----
+
+接着稍作修改
+
+```java
+	public static void main(String[] args) throws Exception {
+        CustomClassLoader loader1 = new CustomClassLoader("loader1");
+        loader1.setPath("/home/cc/test/");
+        Class<?> clazz = loader1.loadClass("indi.greenhat.jvm.Test");
+        Object object = clazz.newInstance();
+
+        System.out.println(object);
+        System.out.println(clazz.hashCode());
+        System.out.println("----getClassLoader-----");
+        System.out.println(clazz.getClassLoader());
+        System.out.println();
+
+        CustomClassLoader loader2 = new CustomClassLoader("loader1");
+        loader2.setPath("/home/cc/test/");
+        Class<?> clazz2 = loader2.loadClass("indi.greenhat.jvm.Test");
+        Object object2 = clazz.newInstance();
+
+        System.out.println(object2);
+        System.out.println(clazz2.hashCode());
+        System.out.println("----getClassLoader-----");
+        System.out.println(clazz2.getClassLoader());
+
+    }
+}
+```
+
+输出：
+
+```java
+findClass invoked: indi.greenhat.jvm.Test
+class loader name: loader1
+indi.greenhat.jvm.Test@677327b6
+21685669
+----getClassLoader-----
+indi.greenhat.jvm.CustomClassLoader@74a14482
+
+findClass invoked: indi.greenhat.jvm.Test
+class loader name: loader1
+indi.greenhat.jvm.Test@135fbaa4
+1173230247
+----getClassLoader-----
+indi.greenhat.jvm.CustomClassLoader@7f31245a
+```
+
+这一次我们把`Test.class`移动到`/home/cc/test/indi/greenhat/jvm`下面，然后尝试去该目录下加载`Test.class`，我们发现，此时类加载器是我们自定义的类加载器，因为该类不是项目目录下的，所以不能由系统类加载器加载，并且发现类加载器的`hashCode值不一样`，为什么呢？
+
+这时候就涉及到了类的命名空间。
+
+> - 每个类加载器都有自己的命名空间，命名空间由该加载器及所有父加载器所加载的类组成
+> - 在同一个命名空间中，不会出现类的完整名字（包括类的包名）相同的两个类
+> - 在不同的命名空间中，有可能会会出现类的完整名字（包括类的包名）相同的两个类
+
+因为new的两个加载器属于不同的命名空间，所以`hashCode`的值不一样。
+
+---
+
+（项目没有Test.class前提）
+
+```java
+CustomClassLoader loader2 = new CustomClassLoader("loader1");
+```
+
+改为
+
+```java
+//将loader1作为loader2的父加载器
+CustomClassLoader loader2 = new CustomClassLoader("loader2"， loader1);
+```
+
+结果会输出
+
+```java
+findClass invoked: indi.greenhat.jvm.Test
+class loader name: loader1
+indi.greenhat.jvm.Test@677327b6
+21685669
+----getClassLoader-----
+indi.greenhat.jvm.CustomClassLoader@74a14482
+
+indi.greenhat.jvm.Test@7f31245a
+21685669
+----getClassLoader-----
+indi.greenhat.jvm.CustomClassLoader@74a14482
+```
+
+加载`Test`的是`loader1`，所以会执行`findClass`里面两个输出语句。`loader1`与`laoder2`在同一命名空间，又因为`loader1`已经加载过了，所以第二次输出的就是直接是`laoder1`已经加载过的结果
 
