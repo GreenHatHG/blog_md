@@ -11,6 +11,8 @@ tags:
 
 <!-- more -->
 
+![](MySQL8.0-arch下二进制安装/1.png)
+
 参考：
 
 [<https://linuxops.org/blog/mysql/mysql8.html>](https://linuxops.org/blog/mysql/mysql8.html)
@@ -168,3 +170,4 @@ sudo systemctl start mysqld.service
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码'
 ```
 
+![](MySQL8.0-arch下二进制安装/2.png)
