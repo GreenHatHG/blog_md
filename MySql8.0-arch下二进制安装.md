@@ -1,5 +1,5 @@
 ---
-title: MySQL8.0-arch下二进制安装
+title: MySql8.0-arch下二进制安装
 date: 2019-05-18 16:14:59
 categories: 教程
 tags:
@@ -11,7 +11,7 @@ tags:
 
 <!-- more -->
 
-![](MySQL8.0-arch下二进制安装/1.png)
+![](MySql8.0-arch下二进制安装/1.png)
 
 参考：
 
@@ -170,4 +170,4 @@ sudo systemctl start mysqld.service
 ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码'
 ```
 
-![](MySQL8.0-arch下二进制安装/2.png)
+![](MySql8.0-arch下二进制安装/2.png)
