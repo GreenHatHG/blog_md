@@ -10,6 +10,10 @@ tags:
 
 <!-- more -->
 
+代码地址：
+
+[github]([https://github.com/GreenHatHG/blog_md/tree/master/Java%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8FJava%E5%AE%9E%E7%8E%B0/Code](https://github.com/GreenHatHG/blog_md/tree/master/Java设计模式-工厂模式Java实现/Code))
+
 # 简单工厂模式
 
 ![](Java设计模式-工厂模式Java实现/1.png)
