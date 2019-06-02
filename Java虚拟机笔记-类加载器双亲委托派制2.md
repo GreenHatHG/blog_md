@@ -92,6 +92,16 @@ null
  *          {@link Throwable#getCause()} method.
  *
  * @revised  1.4
+ * 返回用于委派的系统类加载器。 
+ * 这是新的ClassLoader实例的默认委派父项， 通常是用于启动应用程序的类加载器。
+ * 该方法首先在运行时的启动顺序中早期被调用
+ * 此时它将创建系统类加载器并将其设置为调用Thread的上下文类加载器
+ * 默认的系统类加载器是此类的实现相关实例
+ * 如果在首次调用此方法时定义系统属性"java.system.class.loader"
+ * 那么该属性的值将被视为将作为系统类  加载器返回的类的名称
+ * 类使用默认的系统类加载器加载，必须定义一个公共构造函数，其被用作代理父ClassLoader类型的单个参数
+ * 然后使用该构造函数创建一个实例，并使用默认的系统类加载器作为参数
+ * 所生成的类加载器被定义为系统类加载器。
  */
 @CallerSensitive
 public static ClassLoader getSystemClassLoader() {
@@ -134,6 +144,9 @@ public static ClassLoader getSystemClassLoader() {
  *          loader.
  *
  * @since  1.2
+ * 返回父类加载器进行委派
+ * 一些实现可以使用null来表示根类加载器
+ * 如果此类加载器的父级是根类加载器，则此方法将返回null
  */
 @CallerSensitive
 public final ClassLoader getParent() {
@@ -205,6 +218,10 @@ file:/home/cc/IdeaProjects/test/out/production/test/Main.class
      *          if the current thread cannot get the context ClassLoader
      *
      * @since 1.2
+     * 返回此Thread的上下文ClassLoader
+     * 上下文ClassLoader由线程的创建者提供，以便在加载类和资源时在此线程中运行的代码使用
+     * 默认是父线程的ClassLoader上下文
+     * 原始线程的上下文ClassLoader通常设置为用于加载应用程序的类加载器
      */
     @CallerSensitive
     public ClassLoader getContextClassLoader() {
@@ -254,6 +271,9 @@ file:/home/cc/IdeaProjects/test/out/production/test/Main.class
      * @see  #findResources(String)
      *
      * @since  1.2
+     * 查找具有给定名称的所有资源
+     * 资源是可以通过独立于代码位置的方式由类代码访问的一些数据（图像，音频，文本等）
+     * 资源的名称是标识资源的/分隔路径名
      */
     public Enumeration<URL> getResources(String name) throws IOException {
         @SuppressWarnings("unchecked")

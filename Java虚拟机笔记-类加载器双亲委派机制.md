@@ -47,6 +47,12 @@ Loder1与Loader2是用户自定义的类加载器，两者之间又形成了父�
 public class Main{
     public static void main(String[] args) throws Exception{
         Class<?> clazz = Class.forName("java.lang.String");
+        /* public ClassLoader getClassLoader()
+         * 返回类的类加载器
+         * 一些实现可能使用null来表示根类加载器。
+         * 如果此类由根类加载器加载，则此方法将在此类实现中返回null。
+         * 如果此对象表示原始类型或空值，则返回null
+         */
         System.out.println(clazz.getClassLoader());
 
         Class<?> clazz2 = Class.forName("Main");
@@ -66,7 +72,10 @@ sun.misc.Launcher$AppClassLoader@18b4aac2
 
 可以看到Main是由系统类加载器加载的
 
-`getClassLoader()`作用：
+# 优势
 
-![](Java虚拟机笔记-类加载器双亲委派机制/3.png)
+1. 可以确保Java核心库的类型安全：所有的Java应用都至少会引用`java.lang.Object`类，也就是说在运行期，`java.lang.Object`这个类会被加载到Java虚拟机中；如果个加载过程是由Java应用自己类加载器所完成的，那么很可能就会在JVM中存在多个版本的`java.lang.Object`，而且这些类之间还是不兼容的，相互不可见的（正是命名空间在发挥着作用）
+   借助于双亲委托机制，Java核心类库中的类的加载工作都是由启动类加载器来统一完成，从而确保了Java应用所使用的都是同一个版本的Java核心类库，他们之间是相互兼容的。
+2. 可以确保Java核心类库所提供的类不会被定义的类所替代。
+3. 不同的类加载器可以为相同名称(`binaryname`)的类创建额外的命名空间。相同名称的类可以并存在Java虚拟机中，只需要用不同的类加载器来加载他们即可。不同类加载器所加载的类之间是不兼容的，这就相当于在Java虚拟机内部创建了一个又一个相互隔离的Java类空间，这类技术在很多框架中都得到了实际应用。
 
