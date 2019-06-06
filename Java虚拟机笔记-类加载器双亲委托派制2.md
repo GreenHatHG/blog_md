@@ -10,7 +10,7 @@ tags:
 
 <!-- more -->
 
-# 样例1
+# 循环获得ClassLoader
 
 ```java
 public class Main{
@@ -37,61 +37,10 @@ null
 
 ## getSystemClassLoader
 
+![](Java虚拟机笔记-类加载器双亲委托派制2/1.png)
+
 ```java
 /**
- * Returns the system class loader for delegation.  This is the default
- * delegation parent for new <tt>ClassLoader</tt> instances, and is
- * typically the class loader used to start the application.
- *
- * <p> This method is first invoked early in the runtime's startup
- * sequence, at which point it creates the system class loader and sets it
- * as the context class loader of the invoking <tt>Thread</tt>.
- *
- * <p> The default system class loader is an implementation-dependent
- * instance of this class.
- *
- * <p> If the system property "<tt>java.system.class.loader</tt>" is defined
- * when this method is first invoked then the value of that property is
- * taken to be the name of a class that will be returned as the system
- * class loader.  The class is loaded using the default system class loader
- * and must define a public constructor that takes a single parameter of
- * type <tt>ClassLoader</tt> which is used as the delegation parent.  An
- * instance is then created using this constructor with the default system
- * class loader as the parameter.  The resulting class loader is defined
- * to be the system class loader.
- *
- * <p> If a security manager is present, and the invoker's class loader is
- * not <tt>null</tt> and the invoker's class loader is not the same as or
- * an ancestor of the system class loader, then this method invokes the
- * security manager's {@link
- * SecurityManager#checkPermission(java.security.Permission)
- * <tt>checkPermission</tt>} method with a {@link
- * RuntimePermission#RuntimePermission(String)
- * <tt>RuntimePermission("getClassLoader")</tt>} permission to verify
- * access to the system class loader.  If not, a
- * <tt>SecurityException</tt> will be thrown.  </p>
- *
- * @return  The system <tt>ClassLoader</tt> for delegation, or
- *          <tt>null</tt> if none
- *
- * @throws  SecurityException
- *          If a security manager exists and its <tt>checkPermission</tt>
- *          method doesn't allow access to the system class loader.
- *
- * @throws  IllegalStateException
- *          If invoked recursively during the construction of the class
- *          loader specified by the "<tt>java.system.class.loader</tt>"
- *          property.
- *
- * @throws  Error
- *          If the system property "<tt>java.system.class.loader</tt>"
- *          is defined but the named class could not be loaded, the
- *          provider class does not define the required constructor, or an
- *          exception is thrown by that constructor when it is invoked. The
- *          underlying cause of the error can be retrieved via the
- *          {@link Throwable#getCause()} method.
- *
- * @revised  1.4
  * 返回用于委派的系统类加载器。 
  * 这是新的ClassLoader实例的默认委派父项， 通常是用于启动应用程序的类加载器。
  * 该方法首先在运行时的启动顺序中早期被调用
@@ -117,33 +66,118 @@ public static ClassLoader getSystemClassLoader() {
 }
 ```
 
-## getParent
+### initSystemClassLoader()
+
+```java
+    private static synchronized void initSystemClassLoader() {
+        //sclSet:设定好系统类加载器了的话该值为true
+        if (!sclSet) {
+            //scl:系统类加载器
+            if (scl != null)
+                //递归调用异常
+                throw new IllegalStateException("recursive invocation");
+            sun.misc.Launcher l = sun.misc.Launcher.getLauncher();
+            if (l != null) {
+                Throwable oops = null;
+                //通过Launch类的getClassLoader()获得应用类加载器
+                scl = l.getClassLoader();
+                try {
+                    scl = AccessController.doPrivileged(
+                        /**
+                         * 处理用户自定义了java.system.class.loader系统属性的情况
+                         * 有可能是默认的AppClassLoader，也有可能是用户自定义的
+                         */
+                        new SystemClassLoaderAction(scl));
+                } catch (PrivilegedActionException pae) {
+                    oops = pae.getCause();
+                    if (oops instanceof InvocationTargetException) {
+                        oops = oops.getCause();
+                    }
+                }
+                if (oops != null) {
+                    if (oops instanceof Error) {
+                        throw (Error) oops;
+                    } else {
+                        // wrap the exception
+                        throw new Error(oops);
+                    }
+                }
+            }
+            //系统类加载器设置完毕
+            sclSet = true;
+        }
+    }
+```
+
+#### SystemClassLoaderAction
+
+```java
+class SystemClassLoaderAction
+    implements PrivilegedExceptionAction<ClassLoader> {
+    private ClassLoader parent;
+
+    SystemClassLoaderAction(ClassLoader parent) {
+        this.parent = parent;
+    }
+
+    public ClassLoader run() throws Exception {
+        //自定义类加载器系统属性
+        String cls = System.getProperty("java.system.class.loader");
+        if (cls == null) {
+            return parent;
+        }
+
+        Constructor<?> ctor = Class.forName(cls, true, parent)
+            .getDeclaredConstructor(new Class<?>[] { ClassLoader.class });
+        ClassLoader sys = (ClassLoader) ctor.newInstance(
+            new Object[] { parent });
+        Thread.currentThread().setContextClassLoader(sys);
+        return sys;
+    }
+}
+```
+
+#### class.forName
 
 ```java
 /**
- * Returns the parent class loader for delegation. Some implementations may
- * use <tt>null</tt> to represent the bootstrap class loader. This method
- * will return <tt>null</tt> in such implementations if this class loader's
- * parent is the bootstrap class loader.
- *
- * <p> If a security manager is present, and the invoker's class loader is
- * not <tt>null</tt> and is not an ancestor of this class loader, then this
- * method invokes the security manager's {@link
- * SecurityManager#checkPermission(java.security.Permission)
- * <tt>checkPermission</tt>} method with a {@link
- * RuntimePermission#RuntimePermission(String)
- * <tt>RuntimePermission("getClassLoader")</tt>} permission to verify
- * access to the parent class loader is permitted.  If not, a
- * <tt>SecurityException</tt> will be thrown.  </p>
- *
- * @return  The parent <tt>ClassLoader</tt>
- *
- * @throws  SecurityException
- *          If a security manager exists and its <tt>checkPermission</tt>
- *          method doesn't allow access to this class loader's parent class
- *          loader.
- *
- * @since  1.2
+ * 返回一个给定类或者接口的一个Class对象，如果没有给定classloader，那么会使用根类加载器，
+ * 给定了类或者接口的完全限定名，那么这个方法将尝试去定位，加载和链接类或接口，
+ * 如果initalize这个参数传了true，那么给定的类如果之前没有被初始化过，那么会被初始化。
+ * @param name 所需类的完全限定名称
+ * @param initialize 是否初始化
+ * @param loader 类加载器
+ */
+public static Class<?> forName(String name, boolean initialize,
+                                   ClassLoader loader)
+        throws ClassNotFoundException
+    {
+        Class<?> caller = null;
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+        	
+        	//获取到调用forName这个方法的Class对象
+            caller = Reflection.getCallerClass();
+            if (sun.misc.VM.isSystemDomainLoader(loader)) {
+            	//获取到调用forName这个方法的Class对象的类加载器
+                ClassLoader ccl = ClassLoader.getClassLoader(caller);
+                if (!sun.misc.VM.isSystemDomainLoader(ccl)) {
+                    sm.checkPermission(
+                        SecurityConstants.GET_CLASSLOADER_PERMISSION);
+                }
+            }
+        }
+        //forName0:native方法
+        return forName0(name, initialize, loader, caller);
+    }
+```
+
+## getParent
+
+![](Java虚拟机笔记-类加载器双亲委托派制2/2.png)
+
+```java
+/**
  * 返回父类加载器进行委派
  * 一些实现可以使用null来表示根类加载器
  * 如果此类加载器的父级是根类加载器，则此方法将返回null
@@ -163,7 +197,7 @@ public final ClassLoader getParent() {
 }
 ```
 
-# 样例2
+# 获得指定class文件的资源
 
 ```java
 import java.net.URL;
@@ -192,31 +226,10 @@ file:/home/cc/IdeaProjects/test/out/production/test/Main.class
 
 ## getContextClassLoader()
 
+![](Java虚拟机笔记-类加载器双亲委托派制2/3.png)
+
 ```java
-/**
-     * Returns the context ClassLoader for this Thread. The context
-     * ClassLoader is provided by the creator of the thread for use
-     * by code running in this thread when loading classes and resources.
-     * If not {@linkplain #setContextClassLoader set}, the default is the
-     * ClassLoader context of the parent Thread. The context ClassLoader of the
-     * primordial thread is typically set to the class loader used to load the
-     * application.
-     *
-     * <p>If a security manager is present, and the invoker's class loader is not
-     * {@code null} and is not the same as or an ancestor of the context class
-     * loader, then this method invokes the security manager's {@link
-     * SecurityManager#checkPermission(java.security.Permission) checkPermission}
-     * method with a {@link RuntimePermission RuntimePermission}{@code
-     * ("getClassLoader")} permission to verify that retrieval of the context
-     * class loader is permitted.
-     *
-     * @return  the context ClassLoader for this Thread, or {@code null}
-     *          indicating the system class loader (or, failing that, the
-     *          bootstrap class loader)
-     *
-     * @throws  SecurityException
-     *          if the current thread cannot get the context ClassLoader
-     *
+    /**
      * @since 1.2
      * 返回此Thread的上下文ClassLoader
      * 上下文ClassLoader由线程的创建者提供，以便在加载类和资源时在此线程中运行的代码使用
@@ -238,39 +251,10 @@ file:/home/cc/IdeaProjects/test/out/production/test/Main.class
 
 ## getResources()
 
+![](Java虚拟机笔记-类加载器双亲委托派制2/4.png)
+
 ```java
-/**
-     * Finds all the resources with the given name. A resource is some data
-     * (images, audio, text, etc) that can be accessed by class code in a way
-     * that is independent of the location of the code.
-     *
-     * <p>The name of a resource is a <tt>/</tt>-separated path name that
-     * identifies the resource.
-     *
-     * <p> The search order is described in the documentation for {@link
-     * #getResource(String)}.  </p>
-     *
-     * @apiNote When overriding this method it is recommended that an
-     * implementation ensures that any delegation is consistent with the {@link
-     * #getResource(java.lang.String) getResource(String)} method. This should
-     * ensure that the first element returned by the Enumeration's
-     * {@code nextElement} method is the same resource that the
-     * {@code getResource(String)} method would return.
-     *
-     * @param  name
-     *         The resource name
-     *
-     * @return  An enumeration of {@link java.net.URL <tt>URL</tt>} objects for
-     *          the resource.  If no resources could  be found, the enumeration
-     *          will be empty.  Resources that the class loader doesn't have
-     *          access to will not be in the enumeration.
-     *
-     * @throws  IOException
-     *          If I/O errors occur
-     *
-     * @see  #findResources(String)
-     *
-     * @since  1.2
+    /**
      * 查找具有给定名称的所有资源
      * 资源是可以通过独立于代码位置的方式由类代码访问的一些数据（图像，音频，文本等）
      * 资源的名称是标识资源的/分隔路径名

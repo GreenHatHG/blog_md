@@ -5,9 +5,7 @@ categories: 读书笔记
 tags:
 - jvm
 ---
-
-类加载器的命名空间
-
+System.getProperty
 <!-- more -->
 
 # System.getProperty()
@@ -110,3 +108,22 @@ sun.misc.Launcher$AppClassLoader@18b4aac2
 我们通过-D改变扩展类的加载器寻找的目录，然后就会抛出异常。
 
 正好说明了`AESKeyGenerator`类是由扩展类加载器加载的。
+
+# java.ext.dirs
+
+如果将`java.ext.dirs`目录指定到含有某个类的.class的文件夹中，尝试用扩展类加载器加载，这样是不行的。
+
+因为扩展类加载器查找的`.jar`文件。
+
+所以可以运用`jar`命令将`.class`文件打包成jar包，例如
+
+`jar cvf test.jar test.class`
+
+# sun.boot.class.path
+
+如果我们修改`sun.boot.class.path`对应的路径则会抛出异常。
+
+因为`Object`类是每个类的父类，如果父类都没有了，那么不用说别的了。
+
+![](Java虚拟机笔记-getProperty/4.png)
+
