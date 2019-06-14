@@ -156,3 +156,226 @@ private static ServiceLoader<CodecSet> codecSetLoader
  }
 ```
 
+## load的调用链
+
+```java
+/**
+ * 使用当前线程的上下文类加载器为给定的服务类型创建新的服务加载器。
+ * 调用ServiceLoader.load(service)等于调用
+ * ServiceLoader.load(service, Thread.currentThread().getContextClassLoader())
+ * @param service 表示服务的接口或抽象类
+ * @type parameter <S> 服务类型的类 
+ * @return 一个新的服务加载器
+ */
+public static <S> ServiceLoader<S> load(Class<S> service) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        return ServiceLoader.load(service, cl);
+    }
+
+/**
+ * 为给定的服务类型和类加载器创建新的服务加载器。
+ * @param service 表示服务的接口或抽象类
+ * @param loader 用于加载提供程序配置文件和提供程序类的类加载器
+ * 如果要使用系统类加载器（或者，失败，则使用引导类加载器），即为null
+ * @return 一个新的服务加载器
+ */
+public static <S> ServiceLoader<S> load(Class<S> service, ClassLoader loader){
+       return new ServiceLoader<>(service, loader);
+}
+
+
+private ServiceLoader(Class<S> svc, ClassLoader cl) {
+    service = Objects.requireNonNull(svc, "Service interface cannot be null");
+    loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
+    //安全方面设置
+    acc = (System.getSecurityManager() != null) ? AccessController.getContext() : null;
+    reload();
+}
+
+/**
+ * 清除此加载程序的提供程序缓存，以便重新加载所有提供程序。
+ * 在调用此方法之后，迭代器方法的后续调用将从头开始延时地查找和实例化提供程序，就像新创建的加载器一样
+ * 此方法适用于可以将新提供程序安装到正在运行的Java虚拟机中的情况。
+ */
+public void reload() {
+    providers.clear();
+    lookupIterator = new ServiceLoader.LazyIterator(service, loader);
+}
+
+//私有内部类实现完全延时的提供者查找
+private class LazyIterator implements Iterator<S>
+    {
+
+        Class<S> service;
+        ClassLoader loader;
+        Enumeration<URL> configs = null;
+        Iterator<String> pending = null;
+        String nextName = null;
+
+        private LazyIterator(Class<S> service, ClassLoader loader) {
+            this.service = service;
+            this.loader = loader;
+        }
+		private boolean hasNextService() {
+            if (nextName != null) {
+                return true;
+            }
+            if (configs == null) {
+                try {
+                    /**
+                	 * private static final String PREFIX = "META-INF/services/";
+                	 * 可以看到，其寻找的路径还是规范中所写的路径
+                	 */
+                    String fullName = PREFIX + service.getName();
+                    if (loader == null)
+                        configs = ClassLoader.getSystemResources(fullName);
+                    else
+                        configs = loader.getResources(fullName);
+                } catch (IOException x) {
+                    fail(service, "Error locating configuration files", x);
+                }
+            }
+            //获取到驱动文件中每一行的内容，比如mysql.sql.jdbc.driver
+            while ((pending == null) || !pending.hasNext()) {
+                if (!configs.hasMoreElements()) {
+                    return false;
+                }
+                pending = parse(service, configs.nextElement());
+            }
+            nextName = pending.next();
+            return true;
+        }
+        
+        private S nextService() {
+            if (!hasNextService())
+                throw new NoSuchElementException();
+            String cn = nextName; 
+            nextName = null;
+            Class<?> c = null;
+            try {
+            	/**
+            	 * @param cn 之前获取到每一行的内容，即驱动的完全限定名
+            	 * @param flase 代表不初始化
+            	 * @param loader 指定了类加载器，这里即是线程上下文类加载器
+            	 */
+                c = Class.forName(cn, false, loader);
+            } catch (ClassNotFoundException x) {
+                fail(service,
+                     "Provider " + cn + " not found");
+            }
+            if (!service.isAssignableFrom(c)) {
+                fail(service,
+                     "Provider " + cn  + " not a subtype");
+            }
+            try {
+                S p = service.cast(c.newInstance());
+                providers.put(cn, p);
+                return p;
+            } catch (Throwable x) {
+                fail(service,
+                     "Provider " + cn + " could not be instantiated",
+                     x);
+            }
+            throw new Error();          // This cannot happen
+        }
+        
+        public boolean hasNext() {   ...   }
+        public S next() {   ...   }
+        public void remove() {   ...   }
+    }
+```
+
+## iterator
+
+可以看到，迭代器的方法实际上还是调用之前`reload`方法里面创建的`lookupIterator`里面的方法，有着延时加载的特性
+
+```java
+/**
+ * 延时加载此加载程序服务的可用提供程序
+ */
+public Iterator<S> iterator() {
+        return new Iterator<S>() {
+
+            Iterator<Map.Entry<String,S>> knownProviders
+                = providers.entrySet().iterator();
+
+            public boolean hasNext() {
+                if (knownProviders.hasNext())
+                    return true;
+                return lookupIterator.hasNext();
+            }
+
+            public S next() {
+                if (knownProviders.hasNext())
+                    return knownProviders.next().getValue();
+                return lookupIterator.next();
+            }
+
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+
+        };
+    }
+```
+
+# 更改线程上下文类加载器
+
+```java
+package indi.greenhat.jvm;
+
+import java.sql.Driver;
+import java.util.Iterator;
+
+import java.util.ServiceLoader;
+
+public class Test {
+    public static void main(String[] args) throws Exception {
+
+        //更改线程上下文类加载器
+        Thread.currentThread().
+                  setContextClassLoader(Test.class.getClassLoader().getParent());
+
+        ServiceLoader<Driver> loader = ServiceLoader.load(Driver.class);
+        Iterator<Driver> iterator = loader.iterator();
+
+        while (iterator.hasNext()) {
+            Driver driver = iterator.next();
+            System.out.println("drive:" + driver.getClass() + ",loader:" + driver.getClass().getClassLoader());
+        }
+        System.out.println("当前上下文类加载器：" + Thread.currentThread().getContextClassLoader());
+        System.out.println("ServiceLoader的类加载器:" + ServiceLoader.class.getClassLoader());
+    }
+}
+```
+
+**输出**
+
+```java
+当前上下文类加载器：sun.misc.Launcher$ExtClassLoader@677327b6
+ServiceLoader的类加载器:null
+```
+
+`Test.class.getClassLoader()`的classLoader是系统类加载器，那么其父加载器则是扩展类加载器，所以程序输出扩展类加载器，**又因为扩展类加载器寻找的路径里面的文件不包含驱动所在文件，所以循环没有输出**。
+
+----
+
+修改线程上下文类加载器为默认后，可以打印出类加载器情况：
+
+```java
+...
+[Loaded indi.greenhat.jvm.Test from file:/home/cc/IdeaProjects/test/out/production/test/]
+...
+[Loaded com.mysql.cj.jdbc.NonRegisteringDriver from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+[Loaded com.mysql.cj.jdbc.Driver from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+[Loaded com.mysql.cj.exceptions.CJException from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+...
+[Loaded com.mysql.cj.exceptions.UnsupportedConnectionStringException from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+...
+[Loaded com.mysql.cj.exceptions.UnableToConnectException from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+[Loaded com.mysql.cj.jdbc.AbandonedConnectionCleanupThread from file:/home/cc/Downloads/Hib/mysql-connector-java-8.0.15.jar]
+...
+[Loaded com.mysql.cj.jdbc.AbandonedConnectionCleanupThread$$Lambda$1/1595428806 from com.mysql.cj.jdbc.AbandonedConnectionCleanupThread]
+...
+```
+

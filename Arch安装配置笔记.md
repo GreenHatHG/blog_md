@@ -487,7 +487,10 @@ yay -S xournal
 
 ## 系统备份
 
-`pacman -S timeshifts`
+```shell
+pacman -S timeshifts
+systemctl enable --now cronie.service
+```
 
 ## 声卡
 
