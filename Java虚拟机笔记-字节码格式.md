@@ -9,7 +9,7 @@ tags:
 
 <!-- more -->
 
-Java从刚开始的时候就有两套 规范，一个是Java语言规范，另外一个是Java虚拟机规范，Java语言规范只是规定了Java语言相关的约束以及规则，而虚拟机规范则才是真正从跨 平台的角度去设计的
+Java从刚开始的时候就有两套 规范，一个是Java语言规范，另外一个是Java虚拟机规范，Java语言规范只是规定了Java语言相关的约束以及规则，而虚拟机规范则才是真正从跨平台的角度去设计的
 
 # Java语言的平台无关性
 
@@ -29,8 +29,24 @@ Java虚拟机将.java文件编译成字节码,而.class字节码文件经过JVM�
 
 # Class文件结构
 
-```java
+## 总体概况
 
+**注意，任何一个Class文件都对应着唯一一个类或接口的定义信息，但反过来说，类或接口并不一定都得定义在文件里（譬如类或接口也可以通过类加载器直接生成）**
+
+```java
+package indi.greenhat.bytecode;
+
+public class Test1 {
+    private int a = 1;
+
+    public int getA() {
+        return a;
+    }
+
+    public void setA(int a) {
+        this.a = a;
+    }
+}
 ```
 
 使用到java内置的一个反编译工具`javap`可以反编译字节码文件。 通过`javap -help`可了解javap的基本用法
@@ -57,7 +73,7 @@ Java虚拟机将.java文件编译成字节码,而.class字节码文件经过JVM�
   -bootclasspath <path>    覆盖引导类文件的位置
 ```
 
-
+反编译上面的java代码后出现的结果
 
 ```java
 Classfile /home/cc/IdeaProjects/test/out/production/test/indi/greenhat/bytecode/Test1.class
@@ -145,10 +161,31 @@ Constant pool:
 SourceFile: "Test1.java"
 ```
 
+在linux下我们可以用`hexyl`工具在终端下查看文件的16进制表示，或者使用`vim -b filename`然后键入`%!xxd -g1`命令查看
 
+![](Java虚拟机笔记-字节码格式/2.png)
+
+可以看到，Class文件是一组以8位字节（由八个二进制数位组成的字节，通常可表示一个字符，即2个字符占一个字节。因为2的4次方表示16，）为基础单位的二进制流，各个数据项目严格按照顺序紧凑地排列在Class文件之中，中间没有添加任何分隔符，这使得整个Class文件中存储的内容几乎 全部是程序运行的必要数据，没有空隙存在。当遇到需要占用8位字节以上空间的数据项 时，则会按照高位在前的方式分割成若干个8位字节进行存储。
+
+## 魔数与Class文件的版本
+
+**每个Class文件的头4个字节称为魔数（0xCAFEBABE），它的唯一作用是确定这个文件是否为一个能被虚拟机接受的Class文件。**
+
+很多文件存储标准中都使用魔数来进行身份识别， 譬如图片格式，如gif或者jpeg等在文件头中都存有魔数。使用魔数而不是扩展名来进行识别 主要是基于安全方面的考虑，因为文件扩展名可以随意地改动。文件格式的制定者可以自由 地选择魔数值，只要这个魔数值还没有被广泛采用过同时又不会引起混淆即可。
+
+---
+
+紧接着魔数的4个字节存储的是Class文件的版本号：第5和第6个字节是次版本号（`Minor Version`），第7和第8个字节是主版本号（`Major Version`）。**Java的版本号是从45开始的**，JDK 1.1之后的每个JDK大版本发布主版本号向上加1（JDK 1.0～1.1使用了45.0～45.3的 版本号），高版本的JDK能向下兼容以前版本的Class文件，但不能运行以后版本的Class文 件，即使文件格式并未发生任何变化，虚拟机也必须拒绝执行超过其版本号的Class文件。
+
+![](Java虚拟机笔记-字节码格式/3.png)
+
+从上面反编译的结果可以看到 `minor version: 0 major version: 52`，或者`0x34`，正好52对应了jdk1.8
+ 
 
 参考：
 
 [Java虚拟机—Class文件结构 - 知乎](https://zhuanlan.zhihu.com/p/45003974)
 
 [轻松看懂Java字节码 - 掘金](https://juejin.im/post/5aca2c366fb9a028c97a5609)
+
+《深入理解java虚拟机（第二版 周志明）》
