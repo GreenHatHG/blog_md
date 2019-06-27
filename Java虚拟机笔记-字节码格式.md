@@ -87,7 +87,7 @@ public class indi.greenhat.bytecode.Test1
 Constant pool:
    #1 = Methodref          #4.#20         // java/lang/Object."<init>":()V
    #2 = Fieldref           #3.#21         // indi/greenhat/bytecode/Test1.a:I
-   #3 = Class              #22            // indi/greenhat/bytecode/Test1
+   #3 = Class              #22            // indi/greenhat/bCC`ytecode/Test1
    #4 = Class              #23            // java/lang/Object
    #5 = Utf8               a
    #6 = Utf8               I
@@ -100,7 +100,7 @@ Constant pool:
   #13 = Utf8               Lindi/greenhat/bytecode/Test1;
   #14 = Utf8               getA
   #15 = Utf8               ()I
-  #16 = Utf8               setA
+  #16 = Utf8               setACC`
   #17 = Utf8               (I)V
   #18 = Utf8               SourceFile
   #19 = Utf8               Test1.java
@@ -117,13 +117,17 @@ Constant pool:
          0: aload_0
          1: invokespecial #1                  // Method java/lang/Object."<init>":()V
          4: aload_0
-         5: iconst_1
+         5: iconst_1### attribute_count
+
+
          6: putfield      #2                  // Field a:I
          9: return
       LineNumberTable:
         line 3: 0
         line 4: 4
-      LocalVariableTable:
+      LocalVariableTable:### attribute_count
+
+
         Start  Length  Slot  Name   Signature
             0      10     0  this   Lindi/greenhat/bytecode/Test1;
 
@@ -171,11 +175,20 @@ SourceFile: "Test1.java"
 
 ![](Java虚拟机笔记-字节码格式/2.jpg)
 
+![](Java虚拟机笔记-字节码格式/7.png)
+
+## 字节码中的数据类型
+
+Class字节码中有两种数据类型 
+
+- 字节数据直接量：这是基本的数据类型。共细分为u1，u2， u4，u8四种，分别代表连续的1个字节、2个字节、4个字节、8个字节组成的整体数据。
+- 表（数组）：表是由多个基本数据或其他表， 按照既定顺序组成的大的数据集合。表是有结构的，它的结构体现在：组成表的成分所在的位置和顺序都是已经严格定义好的。 
+
 ## 魔数（Magic Number）
 
 **每个Class文件的头4个字节称为魔数（0xCAFEBABE），它的唯一作用是确定这个文件是否为一个能被虚拟机接受的Class文件。**
 
-很多文件存储标准中都使用魔数来进行身份识别， 譬如图片格式，如gif或者jpeg等在文件头中都存有魔数。使用魔数而不是扩展名来进行识别 主要是基于安全方面的考虑，因为文件扩展名可以随意地改动。文件格式的制定者可以自由 地选择魔数值，只要这个魔数值还没有被广泛采用过同时又不会引起混淆即可。
+很多文件存储标准中都使用魔数来进行身份识别， 譬如图片格式，如gif或者jpeg等在文件头中都存有魔数。使用魔数而不是扩展名来进行识别 主要是基于安全方面的考虑，因为文件扩展名可以随意地改动。文件格式的制定者可以自由 地选择魔数值，只要这个魔数值还没有被广泛采用过同时又不会引起混淆即可。否被声明为final等。具体的标志位以及标志的含义：否被声明为final等。具体的标志位以及标志的含义：
 
 ## Class文件的版本
 
@@ -190,6 +203,94 @@ SourceFile: "Test1.java"
  **Class文件版本号**
 
 ![](Java虚拟机笔记-字节码格式/4.png)
+
+## 常量池
+
+[Java虚拟机笔记-字节码文件中的常量池 | 葵花妈妈开课辣](Java虚拟机笔记-字节码文件中的常量池 | 葵花妈妈开课辣)
+
+## 访问标志
+
+在常量池结束之后， 紧接着的两个字节代表访问标志（`access_flags`） ， 这个标志用于识别一些类或者接口层次的访问信息， 包括： 这个Class是类还是接口； 是否定义为`public`类型； 是否定义为`abstract`类型； 如果是类的话， 是否被声明为`final`等。具体的标志位以及标志的含义：
+
+![](Java虚拟机笔记-字节码格式/3.jpg)
+
+`00 21`为此Class文件的一个访问标志符，查看访问表格没有值为21的标志。是因为JVM并不是枚举每一个标志值。
+
+`0x00 21`是`0x0001`和`0x0020`的并集，表示`ACC_PUBLIC`与`ACC_SUPER`
+
+## 类索引、 父类索引与接口索引集合
+
+1. 类索引(`this_class`) 和父类索引(`super_class`) 都是一个`u2`类型的数据， 而接口索引集合(`interfaces`)是一组`u2`类型的数据的集合， **Class文件中由这三项数据来确定这个类的继承关系**。 **类索引用于确定这个类的全限定名， 父类索引用于确定这个类的父类的全限定名**。 由于Java语言不允许多重继承， 所以父类索引只有一个， 除了`java.lang.Object`之外， 所有的Java类都有父类，**因此除了`java.lang.Object`外， 所有Java类的父类索引都不为0**。**接口索引集合就用来描述这个类实现了哪些接口**， 这些被实现的接口将按`implements`语句（ 如果这个类本身是一个接口， 则应当是`extends`语句） 后的接口顺序从左到右排列在接口索引集合中。
+
+2. 类索引和父类索引各自指向一个类型`为CONSTANT_Class_info`的类描述符常量， 通过`CONSTANT_Class_info`类型的常量中的索引值可以找到定义在`CONSTANT_Utf8_info`类型的常量中的全限定名字符串
+
+3. 对于接口索引集合， 入口的第一项——u2类型的数据为接口计数器(`interfaces_count`) ， 表示索引表的容量。 如果该类没有实现任何接口， 则该计数器值为0，后面接口的索引表不再占用任何字节
+
+`00 03`为一个类索引，通过寻找`utf-8`类型确定类的全限定名
+
+```java
+#3 = Class              #22            // indi/greenhat/bCC`ytecode/Test1
+#22 = Utf8               indi/greenhat/bytecode/Test1
+```
+
+`00 04`是一个父类索引
+
+```java
+#4 = Class              #23            // java/lang/Object
+#23 = Utf8               java/lang/Object
+```
+
+`00 00 `为接口索引集合，因为值为0，所以没有后续接口内容
+
+## 字段表集合
+
+字段表(`field_info`)用于描述接口或者类中声明的变量。 字段(`field`)包括类级变量以及实例级变量， 但不包括在方法内部声明的局部变量。
+
+字段表的结构如下所示：
+
+![](Java虚拟机笔记-字节码格式/5.png)
+
+### access_flags
+
+字段修饰符放在`access_flags`项目中， 它与类中的`access_flags`项目是非常类似的， 都是一个`u2`的数据类型
+
+其中可以设置的标志位和含义:
+
+![](Java虚拟机笔记-字节码格式/6.png)
+
+很明显， 在实际情况中， `ACC_PUBLIC`，`ACC_PRIVATE`，`ACC_PROTECTED`三个标志最多只能选择其一，`ACC_FINAL`，`ACC_VOLATILE`不能同时选择。 接口之中的字段必须有`ACC_PUBLIC`，`ACC_STATIC`，`ACC_FINAL`标志， 这些都是由Java本身的语言规则所决定的。
+
+### name_index与descripor_index
+
+跟随`access_flags`标志的是两项索引值： `name_index`和`descriptor_index`。它们都是对常量池的引用， **分别代表着字段的简单名称以及字段和方法的描述符。**
+
+*简单名称是指没有类型和参数修饰的方法或者字段名称， 比如一个类中的inc()方法和m字段的简单名称分别是`inc`和`m`。描述符可以参考：[Java虚拟机笔记-字节码文件中的常量池 | 葵花妈妈开课辣](Java虚拟机笔记-字节码文件中的常量池 | 葵花妈妈开课辣)*
+
+### attribute_count
+
+在`descriptor_index`之后跟随着一个属性表集合用于存储一些额外的信息， 字段都可以在属性表中描述零至多项的额外信息。
+
+---
+
+`00 01`表示的是属性的数量，表明只有一个字段，然后可以从字段表结构出发，分析这个字段的结构
+
+`00 02`为`access_flags`，表示是`private`
+
+`00 05`为`name_index`，表示的是`a`
+
+```java
+#5 = Utf8               a
+```
+
+`00 06`为`descripor_index`，表示的是`I`
+
+```java
+ #6 = Utf8               I
+```
+
+`00 00`表示`attribute_count`的值为0
+
+
 
 
 
