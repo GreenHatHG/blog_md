@@ -82,7 +82,9 @@ Constant pool:
 
 # 常量池中数据类型结构
 
-常量池中的每一项常量都是一个表，在 JDK 7 之前共有 11 种结构不同的表，在 JDK 7 中为了更好的支持动态语言调用，又增加了3种。都是`CONSTANT`开头，`info`结尾![](/home/cc/blog_md/Java%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%AC%94%E8%AE%B0-%E5%AD%97%E8%8A%82%E7%A0%81%E6%A0%BC%E5%BC%8F/5.png)
+常量池中的每一项常量都是一个表，在 JDK 7 之前共有 11 种结构不同的表，在 JDK 7 中为了更好的支持动态语言调用，又增加了3种。都是`CONSTANT`开头，`info`结尾
+
+![](Java虚拟机笔记-字节码文件中的常量池/4.png)
 
 其中 `CONSTANT_Utf8_info` 类型的常量，它的 `length` 值说明了这个 UTF-8 编码的字符串长度是多少字节，`bytes` 的值为长度为 `length` 字节的 UTF-8 缩略编码表示的字符串
 
