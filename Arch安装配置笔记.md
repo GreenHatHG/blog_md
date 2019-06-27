@@ -648,3 +648,10 @@ pacman -S goldendict
 
 `https://zh.wiktionary.org/w`
 
+## 16进制查看器
+
+```she
+pacmam -S ghex   #查看功能
+pacman -S okteta #修改功能
+```
+
