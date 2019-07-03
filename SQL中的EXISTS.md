@@ -143,13 +143,11 @@ SELECT Sname FROM Student WHERE EXISTS(
 
 对于下面的查询要求，只能通过` NOT EXISTS `关键字来实现，因为 `SQL` 中并未直接提供关系代数中的除法功能。
 
-```
-查询选修了全部课程的学生的姓名
-```
+- 查询选修了全部课程的学生的姓名
 
 可以通过以下步骤的思路来实现：
 
-1. 先取 `Studen`t 表中的第一个元组，得到其 `Sno` 列的值。也就是获取到学生对应的学号
+1. 先取 `Student` 表中的第一个元组，得到其 `Sno` 列的值。也就是获取到学生对应的学号
 2. 再取` Course `表中的第一个元组，得到其` Cno` 列的值。也就是获取到课程对应的课程号
 3. 根据 `Sno` 与 `Cno` 的值，遍历 `SC` 表中的所有记录（也就是选课记录）。若对于某个 `Sno `和 `Cno `的值来说，**在 `SC` 表中找不到相应的记录，则说明该 `Sno` 对应的学生没有选修该 `Cno` 对应的课程。**
 
@@ -171,9 +169,7 @@ SELECT Sname FROM Student WHERE NOT EXISTS
 
 同理，对于类似的查询要求
 
-```
-查询被所有学生选修的课程的课名
-```
+- 查询被所有学生选修的课程的课名
 
 ```plsql
 SELECT Cname FROM Course WHERE NOT EXISTS
@@ -182,9 +178,7 @@ SELECT Cname FROM Course WHERE NOT EXISTS
         	Sno=Student.Sno AND Cno=Course.Cno));
 ```
 
-``` 
-查询选修了95001号学生选修的全部课程的学生的学号
-```
+- 查询选修了95001号学生选修的全部课程的学生的学号
 
 ```plsql
 SELECT DISTINCT Sno FROM SC X WHERE NOT EXISTS

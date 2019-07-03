@@ -655,3 +655,10 @@ pacmam -S ghex   #查看功能
 pacman -S okteta #修改功能
 ```
 
+## 离线文档管理
+
+```shell
+pacman -S zeal
+#第三方源：https://zealusercontributions.now.sh/
+```
+
