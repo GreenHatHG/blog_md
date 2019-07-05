@@ -177,6 +177,8 @@ SourceFile: "Test1.java"
 
 ![](Java虚拟机笔记-字节码格式/7.png)
 
+![](Java虚拟机笔记-字节码格式/9.png)
+
 ## 字节码中的数据类型
 
 Class字节码中有两种数据类型 
@@ -290,9 +292,106 @@ Class字节码中有两种数据类型
 
 `00 00`表示`attribute_count`的值为0
 
+## 方法表集合
 
+Class文件存储格式中对方法的描述与对字段的描述几乎采用了完全一致的方式
 
+- 方法表结构：
 
+![](Java虚拟机笔记-字节码格式/8.png)
+
+- `attribute_info`结构：
+
+```java
+attribute_info{
+    u2 attribute_name_index;  //属性名的索引
+    u4 attribute_length;   //属性的长度
+    u1 info[attribute_length];  //具体的信息
+}
+```
+
+- 访问标志：
+
+![](Java虚拟机笔记-字节码格式/4.jpg)
+
+---
+
+`00 03`为方法表的数量，转换为十进制有3个，也就是
+
+1. `getA()`
+2. `setA()`
+3. 编译器自动生成的默认构造方法
+
+`00 01`为`ACC_public`访问标志
+
+`00 07`和`00 08`为常量池索引，分别表示`name_index`与`descripor_index`
+
+```java
+#7 = Utf8               <init>
+#8 = Utf8               ()V
+```
+
+`00 01`为`attribute_count`，也就是说共有一个属性表
+
+`00 09`为`attribute_info`里面的`attribute_name_index`
+
+```java
+#9 = Utf8               Code
+```
+
+方法里的Java代码， 经过编译器编译成字节码指令后， 存放在方法属性表集合中一个名为`Code`的属性里面
+
+比如：
+
+```java
+  public int getA();
+    descriptor: ()I
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0
+         1: getfield      #2                  // Field a:I
+         4: ireturn
+      LineNumberTable:
+        line 7: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+            0       5     0  this   Lindi/greenhat/bytecode/Test1;
+```
+
+`00 00 00 38`为`attribute_length`，转换为十进制为56，也就是说会用56个字节作为`code`里面的值
+
+### Code属性
+
+**Java程序方法体中的代码经过`Javac`编译器处理后， 最终变为字节码指令存储在`Code`属性内**。 `Code`属性出现在方法表的属性集合之中， 但并非所有的方法表都必须存在这个属性， 譬如接口或者抽象类中的方法就不存在`Code`属性， 如果方法表有`Code`属性存在， 那么它的结构如下所示：
+
+![](Java虚拟机笔记-字节码格式/5.jpg)
+
+- `attribute_name_index`是一项指向`CONSTANT_Utf8_info`型常量的索引， 常量值固定为`Code`， 它代表了该属性的属性名称
+
+-  `attribute_length`指示了属性值的长度， 由于属性名称索引与属性长度一共为6字节， 所以属性值的长度固定为整个属性表长度减去6个字节
+
+- `max_stack`代表了操作数栈(`Operand Stacks`)深度的最大值。 在方法执行的任意时刻，操作数栈都不会超过这个深度。 虚拟机运行的时候需要根据这个值来分配栈帧(`Stack Frame`)中的操作栈深度
+
+- `max_locals`代表了局部变量表所需的存储空间。
+
+  *在这里， `max_locals`的单位是`Slot`,`Slot`是虚拟机为局部变量分配内存所使用的最小单位。 对于`byte`，`char`，`float`，`int`，`short`，`boolean`和`returnAddress`等长度不超过32位的数据类型， 每个局部变量占用1个`Slot`， 而`double`和`long`这两种64位的数据类型则需要两个`Slot`来存放*
+
+- `code_length`和`code`用来存储Java源程序编译后生成的字节码指令。`code_length`代表字节码长度， `code`是用于存储字节码指令的一系列字节流
+
+   *既然叫字节码指令， 那么每个指令就是一个u1类型的单字节， 当虚拟机读取到code中的一个字节码时， 就可以对应找出这个字节码代表的是什么指令， 并且可以知道这条指令后面是否需要跟随参数， 以及参数应当如何理解*
+
+  *关于`code_length`， 有一件值得注意的事情， 虽然它是一个u4类型的长度值， 理论上最大
+  值可以达到`2^32-1`， 但是虚拟机规范中明确限制了一个方法不允许超过65535条字节码指令，
+  即它实际只使用了u2的长度， 如果超过这个限制， Javac编译器也会拒绝编译。 一般来讲， 编
+  写Java代码时只要不是刻意去编写一个超长的方法来为难编译器， 是不太可能超过这个最大
+  值的限制。 但是， 某些特殊情况， 例如在编译一个很复杂的JSP文件时， 某些JSP编译器会把
+  JSP内容和页面输出的信息归并于一个方法之中， 就可能因为方法生成字节码超长的原因而
+  导致编译失败*
+
+- `exception_table`用来存放的是异常处理的信息，每个`exception_table`表项由`start_pc`，`end_pc`，`handler_pc`以及`catch_type`组成
+
+  
 
 参考：
 
@@ -300,6 +399,8 @@ Class字节码中有两种数据类型
 
 [轻松看懂Java字节码 - 掘金](https://juejin.im/post/5aca2c366fb9a028c97a5609)
 
-《深入理解java虚拟机（第二版 周志明）》
-
 [类文件结构 | nekolr's blog](https://blog.nekolr.com/2018/04/18/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/)
+
+[认识 .class 文件的字节码结构 | 一些无处安放的代码和故事](https://lijiankun24.com/%E8%AE%A4%E8%AF%86-class-%E6%96%87%E4%BB%B6%E7%9A%84%E5%AD%97%E8%8A%82%E7%A0%81%E7%BB%93%E6%9E%84/)
+
+《深入理解java虚拟机（第二版 周志明）》
