@@ -179,6 +179,8 @@ SourceFile: "Test1.java"
 
 ![](Java虚拟机笔记-字节码格式/9.png)
 
+![](Java虚拟机笔记-字节码格式/21.png)
+
 ## 字节码中的数据类型
 
 Class字节码中有两种数据类型 
@@ -391,7 +393,62 @@ attribute_info{
 
 - `exception_table`用来存放的是异常处理的信息，每个`exception_table`表项由`start_pc`，`end_pc`，`handler_pc`以及`catch_type`组成
 
-  
+
+---
+
+我们可以用[jclasslib](https://github.com/ingokegel/jclasslib)这个软件来帮助我们查看字节码
+
+![](Java虚拟机笔记-字节码格式/10.png)
+
+可以看到Code里面其实是一系列的助记符，其对应的十六进制为
+
+![](Java虚拟机笔记-字节码格式/11.png)
+
+也就是说`0x2A`对应的就是`aload_0`
+
+`0xB7`对应的就是` invokespecial`，后面的`00 01`代表` java/lang/Object."<init>":()V`，也就是`invokespecial`后面所要接受的参数值
+
+对应的助记符解释（来自《Java虚拟机规范 JavaSE8》）
+
+![](Java虚拟机笔记-字节码格式/12.png)
+
+![](Java虚拟机笔记-字节码格式/13.png)
+
+![](Java虚拟机笔记-字节码格式/14.png)
+
+![](Java虚拟机笔记-字节码格式/15.png)
+
+![](Java虚拟机笔记-字节码格式/16.png)
+
+#### LineNumberTable属性
+
+`LineNumberTable`属性用于描述Java源码行号与字节码行号（ 字节码的偏移量） 之间的对应关系。 它并不是运行时必需的属性， 但默认会生成到Class文件之中
+
+![](Java虚拟机笔记-字节码格式/17.png)
+
+`line_number_table`是一个数量为`line_number_table_length`，类型为`line_number_info`的集
+合， `line_number_info`表包括了`start_pc`和`line_number`两个`u2`类型的数据项， 前者是字节码行
+号， 后者是Java源码行号。当程序运行抛出异常时，异常堆栈中显示出错的行号就是根据这个对应关系来显示的。
+
+![](Java虚拟机笔记-字节码格式/18.png)
+
+#### LocalVariableTable属性
+
+`LocalVariableTable`属性用于描述栈帧中局部变量表中的变量与Java源码中定义的变量之间的关系， 它也不是运行时必需的属性， 但默认会生成到Class文件之中
+
+![](Java虚拟机笔记-字节码格式/6.jpg)
+
+`local_variable_info`结构:
+
+![](Java虚拟机笔记-字节码格式/19.png)
+
+- `start_pc`和`length`属性分别代表了这个局部变量的生命周期开始地字节码偏移量及其作用范围覆盖的长度，两者结合起来就是这个局部变量在字节码之中的作用域范围。
+- `name_index`和`descriptor_index`都是指向常量池中`CONSTANT_Utf8_info`型常量的索引，分别代表了局部变量的名称以及这个局部变量的描述符。
+- `index`是这个局部变量在栈帧局部变量表中`Slot`的位置。当这个变量数据类型是 64位类型时（`double`和`long`），他占用的`Slot`为`index`和`index+1`两个
+
+![](Java虚拟机笔记-字节码格式/20.png)
+
+**可以看到默认构造函数有一个局部变量this，代表类自身**
 
 参考：
 
@@ -402,5 +459,7 @@ attribute_info{
 [类文件结构 | nekolr's blog](https://blog.nekolr.com/2018/04/18/%E7%B1%BB%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84/)
 
 [认识 .class 文件的字节码结构 | 一些无处安放的代码和故事](https://lijiankun24.com/%E8%AE%A4%E8%AF%86-class-%E6%96%87%E4%BB%B6%E7%9A%84%E5%AD%97%E8%8A%82%E7%A0%81%E7%BB%93%E6%9E%84/)
+
+[Java Class文件结构解析-云栖社区-阿里云](https://yq.aliyun.com/articles/640924)
 
 《深入理解java虚拟机（第二版 周志明）》
