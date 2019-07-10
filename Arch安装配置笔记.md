@@ -662,3 +662,9 @@ pacman -S zeal
 #第三方源：https://zealusercontributions.now.sh/
 ```
 
+## pip
+
+```shell
+pacman -S python-pip
+```
+
