@@ -1,4 +1,5 @@
 ---
+
 title: Java虚拟机规范(JavaSE8)笔记--java虚拟机结构
 date: 2019-03-19 16:34:39
 categories: 读书笔记
@@ -9,6 +10,13 @@ tags:
 
 
 <!-- more -->
+
+# 整体结构
+
+![](Java虚拟机规范(JavaSE8)笔记--java虚拟机结构/1.jpg)
+![](Java虚拟机规范(JavaSE8)笔记--java虚拟机结构/3.jpeg)
+
+![](Java虚拟机规范(JavaSE8)笔记--java虚拟机结构/2.jpeg)
 
 # Class文件格式
 
