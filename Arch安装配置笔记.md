@@ -28,7 +28,7 @@ wifi-menu
 
 然后可以检测连接是否成功
 
-```
+```bash
 ping -c 5 www.baidu.com
 ```
 
@@ -71,37 +71,43 @@ cfdisk /dev/sdx
 
 ## 格式化分区
 
-1. 格式化成`ext4`
+- 格式化成`ext4`
 
 ```
 mkfs.ext4 /dev/sdX2
 ```
 
-2. 格式`swap`分区并激活
+- 格式`swap`分区并激活
 
 ```
 mkswap /dev/sdX3
 swapon /dev/sdX3
 ```
 
+- 格式化`efi`分区
+
+```
+mkfs -t vfat /dev/sdX4
+```
+
 ## 挂载分区
 
-1. 首先将根分区 [挂载](https://wiki.archlinux.org/index.php/Mount) 到 `/mnt`
+- 首先将根分区 [挂载](https://wiki.archlinux.org/index.php/Mount) 到 `/mnt`
 
 ```
 mount /dev/sdX2 /mnt
 ```
 
-（可选）
+（多个分区的情况下可选）
 
-2. 挂载`home`分区
+- 挂载`home`分区
 
 ```
 mkdir /mnt/home
 mount /dev/sdx3 /mnt/home
 ```
 
-3. 挂载`boot`分区(uefi)
+- 挂载`boot`分区(uefi)
 
 ```
 mkdir -p /mnt/boot/efi
@@ -156,7 +162,7 @@ ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 hwclock --systohc 
 ```
 
-本地化
+## 本地化
 
 `/etc/locale.gen` 是一个仅包含注释文档的文本文件。指定您需要的本地化类型，只需移除对应行前面的注释符号（`＃`）即可，建议选择带 `UTF-8` 的项
 
@@ -358,19 +364,21 @@ pacman -S yay
 
 ## zsh
 
-1. 安装
+- 安装
 
-`pacman -S zsh`
+```shell
+pacman -S zsh
 
-2. 设置zsh为默认shell
+#设置zsh为默认shell
+sudo chsh -s /bin/zsh username
 
-`sudo chsh -s /bin/zsh username`
+#安装oh-my-zsh
+yay -S oh-my-zsh-git
+```
 
-3. 安装oh-my-zsh
+---
 
-`yay -S oh-my-zsh-git`
-
-4. 插件
+**插件**
 
 - zsh-autosuggestions
 
@@ -378,31 +386,44 @@ pacman -S yay
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 ```
 
-- zsh-syntax-highlighting
+- `zsh-syntax-highlighting`
 
 ```shell
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 ```
 
-5. 配置`~/.zshrc`
+- 配置`~/.zshrc`
 
 ```she
 plugins=( zsh-autosuggestions zsh-syntax-highlighting)
 ```
 
+---
+
 ## 配置网络
-1. 安装networkmanager
 
-`pacman -S networkmanager`
-2. 设置开机自启并启用
+- 安装networkmanager
 
-`systemctl enable NetworkManager`
-`systemctl start NetworkManager`
-3. 安装前端插件
+``` shell
+pacman -S networkmanager
+```
 
-- GTK3+前端小程序，工作在Xorg环境下，带有一个系统托盘。 
-`pacman -S network-manager-applet`
-- kde可以只安装plasma-nm，然后通过 面板的选项 > 添加部件 > 网络 来把它添加到KDE的任务栏上。
+- 设置开机自启并启用
+
+```shell
+systemctl enable NetworkManager
+systemctl start NetworkManager
+```
+
+- 安装前端插件
+
+  - GTK3+前端小程序，工作在Xorg环境下，带有一个系统托盘。 
+
+    ```shell
+    pacman -S network-manager-applet
+    ```
+
+  - kde可以只安装plasma-nm，然后通过 面板的选项 > 添加部件 > 网络 来把它添加到KDE的任务栏上。
 
 ## 中文输入法
 **搜狗输入法**
@@ -423,38 +444,139 @@ export QT_IM_MODULE="fcitx"
 
 ## 字体
 
-参考:archwiki:
-
-- Localization/Simplified Chinese
-- Font Configuration/Chinese 
 1. 安装字体
 
 ```shell
-pacman -S ttf-dejavu ttf-monaco
-pacman -U ttf-ms-win10-other-10.0.17763.348-1-any.pkg.tar.xz
+pacman -S ttf-dejavu ttf-monaco noto-fonts noto-fonts-cjk noto-fonts-emoji noto-fonts-extra otf-fira-code
 ```
 
-2. 移动美化包
+2. 选择
+   - 字体: `noto fonts cjk`,
+   - 等宽字体: `Fira Code`或者`monaco`
+
+3. 配置文件
 
 ```shell
-cp -r fonts_infinality /etc/fonts
-chmod -R 755 /etc/fonts
-cp fonts_infinality/fonts.conf ~/.config/fontconfig/fonts.conf
+# .config/fontconfig/fonts.conf
+
+<?xml version='1.0'?>
+<!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+<fontconfig>
+    <alias>
+        <family>serif</family>
+        <prefer>
+            <family>Noto Serif</family>
+            <family>Noto Serif CJK SC</family>
+            <family>Noto Serif CJK TC</family>
+            <family>Noto Serif CJK JP</family>
+            <family>Noto Serif CJK KR</family>
+            <family>Noto Color Emoji</family>
+            <family>Noto Emoji</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>sans-serif</family>
+        <prefer>
+            <family>Noto Sans</family>
+            <family>Noto Sans CJK SC</family>
+            <family>Noto Sans CJK TC</family>
+            <family>Noto Sans CJK JP</family>
+            <family>Noto Sans CJK KR</family>
+            <family>Noto Color Emoji</family>
+            <family>Noto Emoji</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>sans-sans</family>
+        <prefer>
+            <family>Noto Sans CJK SC</family>
+            <family>Noto Sans CJK TC</family>
+            <family>Noto Sans CJK JP</family>
+            <family>Noto Sans CJK KR</family>
+            <family>Noto Color Emoji</family>
+            <family>Noto Emoji</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>tahoma</family>
+        <prefer>
+            <family>Noto Sans CJK SC</family>
+            <family>Noto Color Emoji</family>
+            <family>Noto Emoji</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>monospace</family>
+        <prefer>
+            <family>Fira Code</family>
+            <family>Noto Sans CJK SC</family>
+            <family>Noto Color Emoji</family>
+            <family>Noto Emoji</family>
+            <family>Noto Sans Mono</family>
+            <family>DejaVu Sans Mono</family>
+        </prefer>
+    </alias>
+    <alias>
+        <family>emoji</family>
+        <default>
+            <family>Noto Color Emoji</family>
+        </default>
+    </alias>
+    <alias>
+        <family>Apple Color Emoji</family>
+        <prefer>
+            <family>Noto Color Emoji</family>
+        </prefer>
+        <default>
+            <family>sans-serif</family>
+        </default>
+    </alias>
+    <alias>
+        <family>Segoe UI Emoji</family>
+        <prefer>
+            <family>Noto Color Emoji</family>
+        </prefer>
+        <default>
+            <family>sans-serif</family>
+        </default>
+    </alias>
+    <match target="font">
+        <edit mode="assign" name="antialias">
+            <bool>true</bool>
+        </edit>
+        <edit mode="assign" name="rgba">
+            <const>rgb</const>
+        </edit>
+        <edit mode="assign" name="hinting">
+            <bool>false</bool>
+        </edit>
+        <edit mode="assign" name="hintstyle">
+            <const>hintnone</const>
+        </edit>
+    </match>
+    <dir>~/.fonts</dir>
+    <match target="font">
+        <edit mode="assign" name="hinting">
+            <bool>false</bool>
+        </edit>
+    </match>
+    <match target="font">
+        <edit mode="assign" name="hintstyle">
+            <const>hintnone</const>
+        </edit>
+    </match>
+</fontconfig>
 ```
 
-3. 配置终端字体为`monaco`
 
-4. 配置系统字体
 
-![](Arch安装配置笔记/2.png)
+参考:
 
-5. 使GTK程序能够显示彩色Emoji
+[Localization/Simplified Chinese](https://wiki.archlinux.org/index.php/Localization/Simplified_Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))
 
-`yay -S cairo-coloredemoji`
+[Font Configuration/Chinese](https://wiki.archlinux.org/index.php/Font_Configuration/Chinese_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))
 
-6. 刷新缓存然后重启
-
-`fc-cache -fv`
+[Arch Linux字体渲染(fontconfig)-fonts.conf参考](https://blog.firerain.me/article/14)
 
 ## synaps
 
@@ -466,13 +588,17 @@ pacman -S synapse
 
 ## 剪贴板
 
-删除自带的klipper
+- 删除自带的`klipper`（kde）
 
-`rm -rf /usr/share/plasma/plasmoids/org.kde.plasma.clipboard`
+```shell
+rm -rf /usr/share/plasma/plasmoids/org.kde.plasma.clipboard
+```
 
-安装`copyq`
+- 安装`copyq`
 
-`pacman -S copyq`
+```shell
+pacman -S copyq
+```
 
 ## xournal
 
@@ -482,7 +608,10 @@ yay -S xournal
 
 ## VirtualBox
 
-`pacman -S virtualbox virtualbox-ext-vnc virtualbox-guest-iso virtualbox-host-modules-arch`
+```shell
+pacman -S virtualbox virtualbox-ext-vnc virtualbox-guest-iso virtualbox-host-modules-arch
+```
+
 再去官网下载Oracle VM VirtualBox Extension Pack ，在设置中导入使用。安装windows的过程不在这里讲解，记得安装之后在windows内安装扩展客户端软件即可。
 
 ## 系统备份
@@ -494,9 +623,12 @@ systemctl enable --now cronie.service
 
 ## 声卡
 
-`pacman -S alsa-utils pulseaudio pulseaudio-bluetooth`
-图形化
-`pacman -S pavucontrol`
+```shell
+pacman -S alsa-utils pulseaudio pulseaudio-bluetooth
+
+#前端
+pacman -S pavucontrol
+```
 
 ## 蓝牙
 
@@ -527,15 +659,21 @@ polkit.addRule(function(action, subject) {
 
 ## 文本工具
 
-` pacman -S foxitreader typora visual-studio-code-bin mousepad` 
+```shell
+pacman -S foxitreader typora visual-studio-code-bin mousepad
+```
 
 ## 编译器
 
-`pacman -S codeblocks`
+```shell
+pacman -S codeblocks
+```
 
 ## 互联网工具
 
-`pacman -S firefox chromium filezilla teamviewer `
+```shell
+pacman -S firefox chromium filezilla teamviewer
+```
 
 **teamviewer not ready**
 
@@ -546,44 +684,45 @@ sudo systemctl enable teamviewerd
 
 ## 图形软件
 
-`pacman -S flameshot nomacs`
+```shell
+pacman -S flameshot nomacs
+```
 
 ## jdk8
 
 1. 到[https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html](https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)下载jdk8
 
-2. `yay -S jdk8`
-3. 将下载的jdk8覆盖到` /tmp/yaourt-tmp-[your-user-name]/aur-jdk8`
-
-4. `yay -S jdk8`
+2. 解压并且配置环境变量
 
 ## 显卡
 
-https://wiki.archlinux.org/index.php/Xorg
+[Xorg - ArchWiki](https://wiki.archlinux.org/index.php/Xorg)
 
-`pacman -S xf86-video-amdgpu mesa`
+```shell
+pacman -S xf86-video-amdgpu mesa
+```
 
 ## 美化
 
 ![](Arch安装配置笔记/1.png)
 
-1. 主题Materia KDE
+```shell
+# 主题Materia KDE
+pacman -S materia-kde kvantum-theme-materia
 
-https://github.com/PapirusDevelopmentTeam/materia-kde
+# 图标papirus
+pacman -S papirus-icon-theme
 
-``pacman -S materia-kde kvantum-theme-materia``
+# 光标
+yay -S capitaine-cursors
+```
 
-2. 图标papirus
+对应的介绍
 
-https://github.com/PapirusDevelopmentTeam/papirus-icon-theme
+- [Materia KDE](https://github.com/PapirusDevelopmentTeam/materia-kde)
 
-``pacman -S papirus-icon-theme``
-
-3. 光标mac--capitaine-cursors
-
-https://github.com/keeferrourke/capitaine-cursors
-
-`yay -S capitaine-cursors`
+- [papirus](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme)
+- [mac--capitaine-cursors](https://github.com/keeferrourke/capitaine-cursors)
 
 ## KDE系部分软件
 
@@ -591,20 +730,20 @@ https://github.com/keeferrourke/capitaine-cursors
 pacman -S dolphin dolphin-plugins konsole ark
 ```
 
-1. Simple System Monitor
+- Simple System Monitor
 
 ```shell
 # 下载https://github.com/dhabyx/plasma-simpleMonitor/releases
 plasmapkg2 -i plasma-simpleMonitor-0.6.plasmoid
 ```
 
-2. 桌面添加网络监视器
+- 桌面添加网络监视器
 
 ![](Arch安装配置笔记/4.png)
 
 ## 解决问题
 
-1. `systemd-backlight@backlight:acpi_video0.service failed`
+- `systemd-backlight@backlight:acpi_video0.service failed`
 
 添加backlight文件夹下的文件名到grub文件,然后禁止上面的service
 
@@ -636,15 +775,15 @@ sudo gpasswd -a ${USER} docker
 pacman -S goldendict
 ```
 
-1. 有道的源
+- 有道的源
 
 `http://dict.youdao.com/search?q=%GDWORD%&ue=utf8`
 
-2. Chinese Wikipedia
+- Chinese Wikipedia
 
 `https://zh.wikipedia.org/w`
 
-3. Chinese Wiktionary
+- Chinese Wiktionary
 
 `https://zh.wiktionary.org/w`
 
