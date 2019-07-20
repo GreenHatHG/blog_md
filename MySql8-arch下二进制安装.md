@@ -73,14 +73,14 @@ chmod 750 ~/opt/mysqlData/data ~/opt/mysqlData/log
 # vim /home/cc/opt/mysql/etc/my.cnf
 [mysql]
 # 设置mysql客户端默认字符集
-default-character-set=utf8
+default-character-set=utf8mb4
 [mysqld]
 port=3306
 # 设置mysql的安装目录
 basedir=/home/cc/opt/mysql
 # 设置mysql数据库的数据的存放目录
 datadir=/home/cc/opt/mysqlData/data
-character-set-server=utf8
+character-set-server=utf8mb4
 # 创建新表时将使用的默认存储引擎
 default-storage-engine=INNODB
 #log
