@@ -51,7 +51,7 @@ void dfs(int x)
 {
 	start[x] = ++dfs_clock;
 	vis[x] = 1;
-    //遍历y的子节点
+    //遍历x的子节点
 	for(every y connected to x)
     {
         if (!vis[y])
@@ -123,10 +123,13 @@ N,M <= 100000
 
 
 
-
+---
 
 参考:
 
 [DFS 序入门 - 6174 的星球 - 洛谷博客](https://www.luogu.org/blog/P6174/dfs-xu-ru-men)
 
-[树的dfs及其应用]([https://acm.sjtu.edu.cn/w/images/3/35/%E6%A0%91%E7%9A%84dfs%E5%BA%8F%E5%8F%8A%E5%85%B6%E5%BA%94%E7%94%A8%EF%BC%88%E9%97%AB%E9%B8%BF%E5%AE%87%EF%BC%89.pdf](https://acm.sjtu.edu.cn/w/images/3/35/树的dfs序及其应用（闫鸿宇）.pdf))
+[树的dfs及其应用](https://acm.sjtu.edu.cn/w/images/3/35/树的dfs序及其应用（闫鸿宇）.pdf)
+
+---
+
