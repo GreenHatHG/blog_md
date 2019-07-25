@@ -3,7 +3,7 @@ title: 在ArchLinux中使用最新的内核模块监控Ryzen温度
 date: 2019-06-09 23:43:55
 categories: 教程
 tags:
-- arch
+- Arch
 ---
 
 AMD Ryzen Temperatures

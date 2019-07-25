@@ -4,7 +4,7 @@ date: 2019-05-18 16:14:59
 categories: 教程
 tags:
 - MySQL
-- arch
+- Arch
 ---
 
 二进制安装可控，方便
