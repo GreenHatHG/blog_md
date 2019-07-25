@@ -1,5 +1,5 @@
 ---
-title: linux上搭建一个本地https测试环境
+title: 搭建NginxHttps本地测试环境
 date: 2019-07-25 16:28:25
 categories: Linux
 tags:
@@ -41,23 +41,23 @@ yay -S mkcert
 
 # 生成证书
 
-1. 生成CA（certificate authority，即证书颁发机构），运行下面的命令可以在`~/.local/share/mkcert/`生成`rootCA.pem`和`rootCA-key.pem`a两个文件，这个命令只需运行一次，因为生成的CA可以反复使用；
+- 生成CA（certificate authority，即证书颁发机构），运行下面的命令可以在`~/.local/share/mkcert/`生成`rootCA.pem`和`rootCA-key.pem`a两个文件，这个命令只需运行一次，因为生成的CA可以反复使用；
 
-   使用`mkcert -install`命令即可
+  使用`mkcert -install`命令即可
 
-![](linux上搭建一个本地https测试环境/1.png)
+![](搭建NginxHttps本地测试环境/1.png)
 
-2. 创建自签名证书，例如要为域名：`hehe.com`和IP：`127.0.0.1`创建证书，可以使用如下的命令：
+- 创建自签名证书，例如要为域名：`hehe.com`和IP：`127.0.0.1`创建证书，可以使用如下的命令：
 
-   ```shell
-   mkcert hehe.com 127.0.0.1
-   ```
+  ```
+  mkcert hehe.com 127.0.0.1
+  ```
 
-   上述命令会自动使用第1步创建的`CA`生成证书文件，其中`xxx.pem`为证书，`xxx-key.pem`为私钥，你也可以使用`-cert-file`和`-key-file`两个参数设置生成文件的文件名。
+  上述命令会自动使用第1步创建的`CA`生成证书文件，其中`xxx.pem`为证书，`xxx-key.pem`为私钥，你也可以使	用`-cert-file`和`-key-file`两个参数设置生成文件的文件名。
 
-   *注意：为了便于管理，建议在单独目录下生成本地证书及密钥*
+  注意：为了便于管理，建议在单独目录下生成本地证书及密钥*
 
-![](linux上搭建一个本地https测试环境/2.png)
+![](搭建NginxHttps本地测试环境/2.png)
 
 生成了证书和私钥以后，就可以在web服务器开启https了
 
@@ -71,7 +71,7 @@ yay -S mkcert
 docker pull nginx:stable-alpine
 ```
 
-![](linux上搭建一个本地https测试环境/3.png)
+![](搭建NginxHttps本地测试环境/3.png)
 
 
 
@@ -102,7 +102,7 @@ server {
 
 然后启用镜像，启动镜像的过程中可以配置映射，映射我们的静态资源文件夹，端口映射以及`https`文件映射
 
-![](linux%E4%B8%8A%E6%90%AD%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%9C%AC%E5%9C%B0https%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83/4.png)
+![](搭建NginxHttps本地测试环境/4.png)
 
 更多可参考：[nginx - Docker Hub](https://hub.docker.com/_/nginx)
 
@@ -125,17 +125,17 @@ docker run --name nginx -d \
 -p 9091:80 -p 9092:443 nginx:stable-alpttps://aeric.io/post/mkcert-valid-https-certificates-for-local
 ```
 
-![](linux上搭建一个本地https测试环境/5.png)
+![](搭建NginxHttps本地测试环境/5.png)
 
 # 测试
 
 ## Chrome75
 
-![](linux上搭建一个本地https测试环境/6.png)
+![](搭建NginxHttps本地测试环境/6.png)
 
 ## Firefox69
 
-![](linux上搭建一个本地https测试环境/7.png)
+![](搭建NginxHttps本地测试环境/7.png)
 
 
 
