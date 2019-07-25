@@ -137,6 +137,29 @@ docker run --name nginx -d \
 
 ![](linux上搭建一个本地https测试环境/7.png)
 
+
+
+# 关于docker nginx的其他命令
+
+```shell
+#启动
+docker start nginx
+
+#停止
+docker stop nginx
+
+#进入
+docker exec -it nginx sh
+
+#删除容器，需要先停止
+docker rm nginx
+
+#删除镜像
+docker rmi nginx:stable-alpine
+```
+
+
+
 ---
 
 参考：
