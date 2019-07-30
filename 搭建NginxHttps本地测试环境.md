@@ -98,7 +98,7 @@ server {
 }
 ```
 
-## 启用
+## 启用docker
 
 然后启用镜像，启动镜像的过程中可以配置映射，映射我们的静态资源文件夹，端口映射以及`https`文件映射
 
@@ -122,7 +122,7 @@ docker run --name nginx -d \
 -v /home/cc/https/hehe.com+1.pem:/etc/nginx/hehe.com+1.pem \
 -v /home/cc/https/hehe.com+1-key.pem:/etc/nginx/hehe.com+1-key.pem \
 -v /home/cc/https/default.conf:/etc/nginx/conf.d/default.conf \
--p 9091:80 -p 9092:443 nginx:stable-alpttps://aeric.io/post/mkcert-valid-https-certificates-for-local
+-p 9091:80 -p 9092:443 nginx:stable-alpine
 ```
 
 ![](搭建NginxHttps本地测试环境/5.png)
