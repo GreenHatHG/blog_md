@@ -207,7 +207,8 @@ passwd
 ## 安装引导
 
 ```
-pacman -S grub efibootmgr
+#后面两个包多系统的情况下可以选装
+pacman -S grub efibootmgr ntfs-3g os-prober
 ```
 
 - 非uefi
@@ -433,7 +434,7 @@ systemctl start NetworkManager
 ```
 
 
-装完以后需要修改`/etc/profile`文件，在文件开头加入三行
+装完以后需要修改`~/.xprofile`文件，在文件开头加入三行
 
 ```shell
 export XMODIFIERS="@im=fcitx"
