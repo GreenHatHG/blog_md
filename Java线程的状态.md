@@ -139,6 +139,8 @@ Exception in thread "main" java.lang.IllegalThreadStateException
 
 ![](Java线程的状态/3.jpeg)
 
+(图源：[Java线程的6种状态及切换(透彻讲解) - 潘建南的博客 - CSDN博客](http://www.ishenping.com/ArtInfo/1194756.htmll))
+
 # sleep与wait的区别
 
 
