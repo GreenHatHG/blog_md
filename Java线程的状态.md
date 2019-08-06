@@ -7,7 +7,7 @@ tags:
 - Java
 ---
 
-线程的6种状态，sleep与wait的区别
+线程的6种状态，sleep与wait的区别，notify与notifyAll的区别，yield，中断线程
 
 <!-- more -->
 
